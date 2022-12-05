@@ -62,8 +62,18 @@ const params = {
 	beginBlock: (async () => (await reach.getNetworkTime()) + 1000)(), // 1000 blocks from the point of creation
 	endBlock: (async () => (await reach.getNetworkTime()) + 2000)(), // 1000 blocks after the begin block begins
 	totalRewardAmount: reach.parseCurrency(tRA), // 1000000 Reward tokens
-	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
+	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
 	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
 	lockLengthBlocks: 1500, // 1. 1500 blocks from the point of creation, this leaves a window of 500 blocks for the contract to start giving out rewards,
 	// afterwhich users can then decide to unstake their stake tokens
 }
+
+const ctc = await admin.contract(backend)
+console.log('[+] deployed the admin contract')
+
+await ctc.p.Creator({
+	getParams: params,
+	deployed: async () => {
+		console.log('deployed', ctc.getInfo)
+	},
+})
