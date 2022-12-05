@@ -164,6 +164,7 @@ const run1st2tAccs = async (x) => {
 			)
 		}
 	}
+
 	i = 0
 	for (i; i < len; i++) {
 		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
@@ -193,6 +194,7 @@ const run1st2tAccs = async (x) => {
 			console.log('[!] failed to unstake', { error })
 		}
 	}
+	done = true
 }
 
 const step = async () => {
@@ -204,14 +206,13 @@ const step = async () => {
 await Promise.allSettled([
 	ctc.p.Creator({
 		getParams: () => params,
-		deployed: async () => {
+		deployed: () => {
 			console.log('creator saw deploy confirmed')
-			await run1st2tAccs(info)
-			done = true
+			run1st2tAccs(info)
 		},
 	}),
 	ctcUser.p.User({
-		deployed: async () => {
+		deployed: () => {
 			console.log('user saw deploy confirmed')
 		},
 	}),
