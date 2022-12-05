@@ -3,7 +3,7 @@ import * as backend from './build/index.main.mjs'
 const reach = loadStdlib()
 
 const adminStartingBalance = stdlib.parseCurrency(100)
-const creatorStartingBalance = stdlib.parseCurrency(10000)
+const creatorStartingBalance = stdlib.parseCurrency(100010)
 const startingBalance = stdlib.parseCurrency(100)
 
 const admin = await reach.newTestAccount(adminStartingBalance)
@@ -57,4 +57,8 @@ const params = {
 	endBlock: (async () => (await reach.getNetworkTime()) + 2000)(), // 1000 blocks after the begin block begins
 	totalRewardAmount: reach.parseCurrency(1000000), // 1000000 Reward tokens
 	totalAlgoRewardAmount: reach.parseCurrency(100000), // 100000 Algos
+    lockLengthBlocks: 1500, // 1. 1500 blocks from the point of creation, this leaves a window of 500 blocks for the contract to start giving out rewards, 
+    // afterwhich users can then decide to unstake their stake tokens
 }
+
+
