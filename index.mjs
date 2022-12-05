@@ -71,6 +71,30 @@ const params = {
 const ctc = await admin.contract(backend)
 console.log('[+] deployed the admin contract')
 
+const run1st2tAccs = async (x) => {
+    let watcher = await reach.contract(backend, x)
+    let initialState = {} 
+    let time = 0
+    do {
+        initialState = await watcher.v.initial()[1]
+        const result = initialState.result
+        time = initialState.now
+
+        if (time >= result.beginBlock) {
+            [tAcc1, tAcc2].forEach(element => {
+                const ctc = element.contract(backend, x)
+                try {
+                   await ctc.a.stake(reach.parseCurrency(120))
+                } catch (error) {
+                    console.log({error})
+                }
+                
+            });
+        }
+    }while(initialState.result.beginBlock < (await reach.getNetworkTime()))
+    
+}
+
 await ctc.p.Creator({
 	getParams: params,
 	deployed: async () => {
