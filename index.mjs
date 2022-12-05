@@ -3,29 +3,33 @@ import * as backend from './build/index.main.mjs'
 const reach = loadStdlib()
 const fmt = (x) => reach.formatCurrency(x, 4)
 
-const adminStartingBalance = stdlib.parseCurrency(100)
-const creatorStartingBalance = stdlib.parseCurrency(100010)
-const startingBalance = stdlib.parseCurrency(100)
+const adminStartingBalance = reach.parseCurrency(100)
+const creatorStartingBalance = reach.parseCurrency(2_000_010)
+const startingBalance = reach.parseCurrency(100)
 
 const admin = await reach.newTestAccount(adminStartingBalance)
 admin.setDebugLabel('admin')
 console.log('[+] admin account created')
 
 const creator = await reach.newTestAccount(creatorStartingBalance)
-creator.setDebugLabel('admin')
+creator.setDebugLabel('creator')
 console.log('[+] creator account created')
 
-const testAccounts = await reach.newTestAccounts(startingBalance, 4)
+const user = await reach.newTestAccount(startingBalance)
+user.setDebugLabel('user')
+console.log('[+] user account created')
+
+const testAccounts = await reach.newTestAccounts(4, startingBalance)
 const [add1, add2, add3, add4] = testAccounts.map((acc, i) => {
 	acc.setDebugLabel(`tAcc${i + 1}`)
 	return reach.formatAddress(acc.getAddress())
 })
-const [tAcc1, tAcc2, tAcc3, tAcc4] = testAccounts
+// const [tAcc1, tAcc2, tAcc3, tAcc4] = testAccounts
 console.log('[+] test accounts created')
 
 const opts = {
 	decimals: 6,
-	supply: 1000000000,
+	supply: 1_000_000_000,
 }
 
 const token1 = await reach.launchToken(admin, 'Aro1914', 'A19', opts)
@@ -40,49 +44,65 @@ const transferSTokToTestAccts = async (tA) => {
 	const len = tA.length
 	let i = 0
 	for (i; i < len; i++) {
-		await reach.transfer(admin, tA[i], 1000, stakeToken)
+		await tA[i].tokenAccept(stakeToken)
+		await tA[i].tokenAccept(rewardToken)
+		await reach.transfer(admin, tA[i], 1_000, stakeToken)
 	}
 }
-transferSTokToTestAccts([tAcc1, tAcc2, tAcc3, tAcc4])
+await transferSTokToTestAccts(testAccounts)
 console.log('[+] transferred stake tokens to test accounts') // this is to enable the test users own the stake token to use for staking
 
-reach.transfer(admin, creator, 1000010, rewardToken)
+await creator.tokenAccept(stakeToken)
+await creator.tokenAccept(rewardToken)
+await reach.transfer(admin, creator, 2_000_000, rewardToken)
 console.log('[+] transferred reward tokens to creator') // this is to enable the creator send in some reward tokens to be distributed to users in rewards
 
 const cF = 10
 const cFTP = 1 * (cF / 100)
-const tRA = 1000000
+const tRA = 1_000_000
 const cFV = tRA * cFTP
 const fACF = 100
 
 const params = {
 	beneficiary: admin.getAddress(),
-	creationFee: cf, // 0.1%,
+	creationFee: cF, // 0.1%,
 	flatAlgoCreationFee: reach.parseCurrency(fACF), // 100 Algos
 	stakeToken,
 	rewardToken,
-	beginBlock: (async () => (await reach.getNetworkTime()) + 1000)(), // 1000 blocks from the point of creation
-	endBlock: (async () => (await reach.getNetworkTime()) + 2000)(), // 1000 blocks after the begin block begins
-	totalRewardAmount: reach.parseCurrency(tRA), // 1000000 Reward tokens
+	beginBlock: (await reach.getNetworkTime()) + 10, // 1000 blocks from the point of creation
+	endBlock: (await reach.getNetworkTime()) + 20, // 1000 blocks after the begin block begins
+	totalRewardAmount: 1_000_000, // 1000000 Reward tokens
 	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
 	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
-	lockLengthBlocks: 500, // 1. 500 blocks from the point of staking, this leaves a window of 500 blocks for the contract to start giving out rewards,
-	// afterwhich users can then decide to unstake their stake tokens
+	lockLengthBlocks: 5, // 1. 500 blocks from the point of staking, this leaves a window of 500 blocks for the contract to start giving out rewards,
+	// after which users can then decide to un-stake their stake tokens
 }
 
-const ctc = await admin.contract(backend)
-console.log('[+] deployed the admin contract')
+const ctc = creator.contract(backend)
+console.log('[+] deployed the main contract')
+
+const info = ctc.getInfo()
+const ctcUser = user.contract(backend, info)
+console.log('[+] attached user to the main contract')
+
+let done = false
 
 const run1st2tAccs = async (x) => {
-	let watcher = await reach.contract(backend, x)
-	let initialState = await watcher.v.initial()[1]
+	console.log('step 1')
+	let initial = await ctc.v.initial()
+	let initialState = initial[1]
 	const stake = 120
 
-	;[tAcc1, tAcc2].forEach(async (acc) => {
-		const ctc = acc.contract(backend, x)
+	const len = 2
+	let i = 0
+	for (i; i < len; i++) {
+		console.log('step 2')
+		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to stake
-			const response = await ctc.a.stake(reach.parseCurrency(stake)) // we have each make the stake
+			console.log('step 3')
+			const response = await ctc.apis.stake() // we have each make the stake
+			console.log('step 4')
 			const { now, result } = response
 			console.log('[*] stake successful', {
 				assertResultEqualToStake: fmt(result) == stake,
@@ -93,20 +113,21 @@ const run1st2tAccs = async (x) => {
 		} catch (error) {
 			console.log('[!] failed to stake', { error })
 		}
-	})
+	}
 
+	i = 0
 	let present = await reach.getNetworkTime()
-	while (present.lt(initialState.result.endBlock)) {
+	while (present.lt(reach.bigNumberToNumber(initialState.endBlock))) {
 		await reach.waitUntilTime(present)
-		present = present.add(1)
-		if ((await reach.getNetworkTime()) >= initialState.result.beginBlock) {
-			;[tAcc1, tAcc2].forEach(async (acc) => {
+		present = present.add(5)
+		if ((await reach.getNetworkTime()) >= parseInt(initialState.beginBlock)) {
+			for (i; i < len; i++) {
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
-					await acc.balancesOf([null, rewardToken])
-				const ctc = acc.contract(backend, x)
+					await testAccounts[i].balancesOf([null, rewardToken])
+				const ctc = testAccounts[i].contract(backend, x)
 				try {
 					// try to claim
-					const response = await ctc.a.claim() // we have each make the stake
+					const response = await ctc.apis.claim() // we have each make the stake
 					const {
 						now,
 						result: [
@@ -115,7 +136,7 @@ const run1st2tAccs = async (x) => {
 						],
 					} = response
 					const [algoBalanceAfterClaim, rewardTokBalanceAfterClaim] =
-						await acc.balancesOf([null, rewardToken])
+						await testAccounts[i].balancesOf([null, rewardToken])
 					const [earnedAlgo, earnedReward] = [
 						algoBalanceAfterClaim - algoBalanceBeforeClaim,
 						rewardTokBalanceAfterClaim - rewardTokBalanceBeforeClaim,
@@ -129,48 +150,70 @@ const run1st2tAccs = async (x) => {
 						rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
 						earnedAlgo: fmt(earnedAlgo),
 						earnedReward: fmt(earnedReward),
-						timeOfClaim: parseInt(now),
+						timeOfClaim: reach.bigNumberToNumber(now),
 					})
 				} catch (error) {
 					console.log('[!] failed to claim', { error })
 				}
-			})
+			}
+		} else {
+			console.log(
+				'Waiting, blocks remaining to begin block',
+				reach.bigNumberToNumber(initialState.beginBlock) -
+					(await reach.getNetworkTime())
+			)
 		}
 	}
-
-	;[tAcc1, tAcc2].forEach(async (acc) => {
+	i = 0
+	for (i; i < len; i++) {
 		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
-			await acc.balancesOf([null, stakeToken])
-		const ctc = acc.contract(backend, x)
+			await testAccounts[i].balancesOf([null, stakeToken])
+		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to unStake
-			const response = await ctc.a.unstake(stake)
+			const response = await ctc.apis.unstake(stake)
 			const { now, result } = response
 			const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
-				await acc.balancesOf([null, stakeToken])
+				await testAccounts[i].balancesOf([null, stakeToken])
 			const [earnedAlgo, unStakedAmount] = [
 				algoBalanceAfterClaim - algoBalanceBeforeClaim,
 				stakeTokBalanceAfterClaim - stakeTokBalanceBeforeClaim,
 			]
 			console.log('[*] unstake call successful', {
+				toUnSkate: fmt(result),
 				algoBalBefore: fmt(algoBalanceBeforeClaim),
 				stakeTokenBalBefore: fmt(stakeTokBalanceBeforeClaim),
 				algoBalAfter: fmt(algoBalanceAfterClaim),
 				stakeTokBalAfter: fmt(stakeTokBalanceAfterClaim),
 				earnedAlgo: fmt(earnedAlgo),
 				unStakedAmount: fmt(unStakedAmount),
-				timeOfClaim: parseInt(now),
+				timeOfClaim: reach.bigNumberToNumber(now),
 			})
 		} catch (error) {
 			console.log('[!] failed to unstake', { error })
 		}
-	})
+	}
 }
 
-await ctc.p.Creator({
-	getParams: params,
-	deployed: async () => {
-		console.log('deployed', await ctc.getInfo())
-		await run1st2tAccs(await ctc.getInfo())
-	},
-})
+const step = async () => {
+	while (!done) {
+		await reach.wait(5)
+	}
+}
+
+await Promise.allSettled([
+	ctc.p.Creator({
+		getParams: () => params,
+		deployed: async () => {
+			console.log('creator saw deploy confirmed')
+			await run1st2tAccs(info)
+			done = true
+		},
+	}),
+	ctcUser.p.User({
+		deployed: async () => {
+			console.log('user saw deploy confirmed')
+		},
+	}),
+	step(),
+])
