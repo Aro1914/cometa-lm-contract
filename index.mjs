@@ -1,6 +1,7 @@
 import { loadStdlib } from '@reach-sh/stdlib'
 import * as backend from './build/index.main.mjs'
 const reach = loadStdlib()
+const fmt = (x) => reach.formatCurrency(x, 4)
 
 const adminStartingBalance = stdlib.parseCurrency(100)
 const creatorStartingBalance = stdlib.parseCurrency(100010)
@@ -15,9 +16,10 @@ creator.setDebugLabel('admin')
 console.log('[+] creator account created')
 
 const testAccounts = await reach.newTestAccounts(startingBalance, 4)
-const [add1, add2, add3, add4] = testAccounts.map((acc) =>
-	reach.formatAddress(acc.getAddress())
-)
+const [add1, add2, add3, add4] = testAccounts.map((acc, i) => {
+	acc.setDebugLabel(`tAcc${i + 1}`)
+	return reach.formatAddress(acc.getAddress())
+})
 const [tAcc1, tAcc2, tAcc3, tAcc4] = testAccounts
 console.log('[+] test accounts created')
 
@@ -64,7 +66,7 @@ const params = {
 	totalRewardAmount: reach.parseCurrency(tRA), // 1000000 Reward tokens
 	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
 	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
-	lockLengthBlocks: 1500, // 1. 1500 blocks from the point of creation, this leaves a window of 500 blocks for the contract to start giving out rewards,
+	lockLengthBlocks: 500, // 1. 500 blocks from the point of staking, this leaves a window of 500 blocks for the contract to start giving out rewards,
 	// afterwhich users can then decide to unstake their stake tokens
 }
 
@@ -72,27 +74,82 @@ const ctc = await admin.contract(backend)
 console.log('[+] deployed the admin contract')
 
 const run1st2tAccs = async (x) => {
-    let watcher = await reach.contract(backend, x)
-    let initialState = {} 
-    let time = 0
-    do {
-        initialState = await watcher.v.initial()[1]
-        const result = initialState.result
-        time = initialState.now
+	let watcher = await reach.contract(backend, x)
+	let initialState = {}
+	let time = 0
+	const ctc = element.contract(backend, x)
+	const stake = 120
+	do {
+		initialState = await watcher.v.initial()[1]
+		const result = initialState.result
+		time = initialState.now
 
-        if (time >= result.beginBlock) {
-            [tAcc1, tAcc2].forEach(element => {
-                const ctc = element.contract(backend, x)
-                try {
-                   await ctc.a.stake(reach.parseCurrency(120))
-                } catch (error) {
-                    console.log({error})
-                }
-                
-            });
-        }
-    }while(initialState.result.beginBlock < (await reach.getNetworkTime()))
-    
+		if (time >= result.beginBlock) {
+			;[tAcc1, tAcc2].forEach(async (element) => {
+				try {
+					const response = await ctc.a.stake(reach.parseCurrency(stake)) // we have each make the stake
+					const { now, result } = response
+					console.log('[*] stake successful', {
+						assertResultEqualToStake: fmt(result) == stake,
+						stake,
+						result: fmt(result),
+						timeOfStake: parseInt(now),
+					})
+				} catch (error) {
+					console.log('[!] failed to stake', { error })
+				}
+			})
+		}
+	} while (initialState.result.beginBlock < (await reach.getNetworkTime()))
+
+	let present = await reach.getNetworkTime()
+	while (present.lt(initialState.result.endBlock)) {
+		await reach.waitUntilTime(present)
+		present = present.add(1)
+		try {
+			;[tAcc1, tAcc2].forEach(async (acc) => {
+				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
+					await acc.balancesOf([null, rewardToken])
+				try {
+					const response = await ctc.a.claim() // we have each make the stake
+					const {
+						now,
+						result: [
+							claimedReward /* in reward tokens */,
+							extraAlgoReward /* in Algos */,
+						],
+					} = response
+					const [algoBalanceAfterClaim, rewardTokBalanceAfterClaim] =
+						await acc.balancesOf([null, rewardToken])
+					const [earnedAlgo, earnedReward] = [
+						algoBalanceAfterClaim - algoBalanceBeforeClaim,
+						rewardTokBalanceAfterClaim - rewardTokBalanceBeforeClaim,
+					]
+					console.log('[*] claim call successful', {
+						claimedReward: fmt(claimedReward),
+						extraAlgoReward: fmt(extraAlgoReward),
+						algoBalBefore: fmt(algoBalanceBeforeClaim),
+						rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
+						algoBalAfter: fmt(algoBalanceAfterClaim),
+						rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
+						earnedAlgo: fmt(earnedAlgo),
+						earnedReward: fmt(earnedReward),
+						timeOfClaim: parseInt(now),
+					})
+				} catch (error) {
+					console.log('[!] failed to claim', { error })
+				}
+			})
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	try {
+		// try to unStake
+	} catch (error) {
+		
+	}
 }
 
 await ctc.p.Creator({
