@@ -75,42 +75,37 @@ console.log('[+] deployed the admin contract')
 
 const run1st2tAccs = async (x) => {
 	let watcher = await reach.contract(backend, x)
-	let initialState = {}
-	let time = 0
-	const ctc = element.contract(backend, x)
+	let initialState = await watcher.v.initial()[1]
 	const stake = 120
-	do {
-		initialState = await watcher.v.initial()[1]
-		const result = initialState.result
-		time = initialState.now
 
-		if (time >= result.beginBlock) {
-			;[tAcc1, tAcc2].forEach(async (element) => {
-				try {
-					const response = await ctc.a.stake(reach.parseCurrency(stake)) // we have each make the stake
-					const { now, result } = response
-					console.log('[*] stake successful', {
-						assertResultEqualToStake: fmt(result) == stake,
-						stake,
-						result: fmt(result),
-						timeOfStake: parseInt(now),
-					})
-				} catch (error) {
-					console.log('[!] failed to stake', { error })
-				}
+	;[tAcc1, tAcc2].forEach(async (acc) => {
+		const ctc = acc.contract(backend, x)
+		try {
+			// try to stake
+			const response = await ctc.a.stake(reach.parseCurrency(stake)) // we have each make the stake
+			const { now, result } = response
+			console.log('[*] stake successful', {
+				assertResultEqualToStake: fmt(result) == stake,
+				stake,
+				result: fmt(result),
+				timeOfStake: parseInt(now),
 			})
+		} catch (error) {
+			console.log('[!] failed to stake', { error })
 		}
-	} while (initialState.result.beginBlock < (await reach.getNetworkTime()))
+	})
 
 	let present = await reach.getNetworkTime()
 	while (present.lt(initialState.result.endBlock)) {
 		await reach.waitUntilTime(present)
 		present = present.add(1)
-		try {
+		if ((await reach.getNetworkTime()) >= initialState.result.beginBlock) {
 			;[tAcc1, tAcc2].forEach(async (acc) => {
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
 					await acc.balancesOf([null, rewardToken])
+				const ctc = acc.contract(backend, x)
 				try {
+					// try to claim
 					const response = await ctc.a.claim() // we have each make the stake
 					const {
 						now,
@@ -140,21 +135,42 @@ const run1st2tAccs = async (x) => {
 					console.log('[!] failed to claim', { error })
 				}
 			})
-		} catch (error) {
-			console.log(error)
 		}
 	}
 
-	try {
-		// try to unStake
-	} catch (error) {
-		
-	}
+	;[tAcc1, tAcc2].forEach(async (acc) => {
+		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
+			await acc.balancesOf([null, stakeToken])
+		const ctc = acc.contract(backend, x)
+		try {
+			// try to unStake
+			const response = await ctc.a.unstake(stake)
+			const { now, result } = response
+			const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
+				await acc.balancesOf([null, stakeToken])
+			const [earnedAlgo, unStakedAmount] = [
+				algoBalanceAfterClaim - algoBalanceBeforeClaim,
+				stakeTokBalanceAfterClaim - stakeTokBalanceBeforeClaim,
+			]
+			console.log('[*] unstake call successful', {
+				algoBalBefore: fmt(algoBalanceBeforeClaim),
+				stakeTokenBalBefore: fmt(stakeTokBalanceBeforeClaim),
+				algoBalAfter: fmt(algoBalanceAfterClaim),
+				stakeTokBalAfter: fmt(stakeTokBalanceAfterClaim),
+				earnedAlgo: fmt(earnedAlgo),
+				unStakedAmount: fmt(unStakedAmount),
+				timeOfClaim: parseInt(now),
+			})
+		} catch (error) {
+			console.log('[!] failed to unstake', { error })
+		}
+	})
 }
 
 await ctc.p.Creator({
 	getParams: params,
 	deployed: async () => {
-		console.log('deployed', ctc.getInfo)
+		console.log('deployed', await ctc.getInfo())
+		await run1st2tAccs(await ctc.getInfo())
 	},
 })
