@@ -47,18 +47,23 @@ console.log('[+] transferred stake tokens to test accounts') // this is to enabl
 reach.transfer(admin, creator, 1000010, rewardToken)
 console.log('[+] transferred reward tokens to creator') // this is to enable the creator send in some reward tokens to be distributed to users in rewards
 
+const cF = 10
+const cFTP = 1 * (cF / 100)
+const tRA = 1000000
+const cFV = tRA * cFTP
+const fACF = 100
+
 const params = {
 	beneficiary: admin.getAddress(),
-	creationFee: 10, // 0.1%,
-	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
+	creationFee: cf, // 0.1%,
+	flatAlgoCreationFee: reach.parseCurrency(fACF), // 100 Algos
 	stakeToken,
 	rewardToken,
 	beginBlock: (async () => (await reach.getNetworkTime()) + 1000)(), // 1000 blocks from the point of creation
 	endBlock: (async () => (await reach.getNetworkTime()) + 2000)(), // 1000 blocks after the begin block begins
-	totalRewardAmount: reach.parseCurrency(1000000), // 1000000 Reward tokens
-	totalAlgoRewardAmount: reach.parseCurrency(100000), // 100000 Algos
-    lockLengthBlocks: 1500, // 1. 1500 blocks from the point of creation, this leaves a window of 500 blocks for the contract to start giving out rewards, 
-    // afterwhich users can then decide to unstake their stake tokens
+	totalRewardAmount: reach.parseCurrency(tRA), // 1000000 Reward tokens
+	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
+	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
+	lockLengthBlocks: 1500, // 1. 1500 blocks from the point of creation, this leaves a window of 500 blocks for the contract to start giving out rewards,
+	// afterwhich users can then decide to unstake their stake tokens
 }
-
-
