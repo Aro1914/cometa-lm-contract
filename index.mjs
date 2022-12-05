@@ -15,7 +15,9 @@ creator.setDebugLabel('admin')
 console.log('creator account created')
 
 const testAccounts = await reach.newTestAccounts(startingBalance, 4)
-const [add1, add2, add3, add4] = testAccounts.map((acc) => reach.formatAddress(acc.getAddress()))
+const [add1, add2, add3, add4] = testAccounts.map((acc) =>
+	reach.formatAddress(acc.getAddress())
+)
 const [tAcc1, tAcc2, tAcc3, tAcc4] = testAccounts
 console.log('test accounts created')
 
@@ -31,6 +33,11 @@ const token2 = await reach.launchToken(admin, 'Lonewolf1914', 'LONE19', opts)
 const stakeToken = token2.id
 
 const params = {
-    beneficiary: admin.getAddress(),
-    creationFee: 
+	beneficiary: admin.getAddress(),
+	creationFee: 10, // 0.1%,
+	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
+	stakeToken,
+	rewardToken,
+	beginBlock: (async () => (await reach.getNetworkTime()) + 1000)(), // 1000 blocks from the point of creation
+	endBlock: (async () => (await reach.getNetworkTime()) + 2000)(), // 1000 blocks after the begin block begins
 }

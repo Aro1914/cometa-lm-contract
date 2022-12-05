@@ -147,7 +147,7 @@ export const main = Reach.App(() => {
     check(endBlock - beginBlock < LONGEST_POSSIBLE_FARM_BLOCKS);
     check(lockLengthBlocks < LONGEST_POSSIBLE_FARM_BLOCKS);
     // Locks are automatically lifted at endBlock, so larger *lockLenghtBlocks* do not make sense.
-    check(lockLengthBlocks <= endBlock - beginBlock);
+    check(lockLengthBlocks <= endBlock - beginBlock); // It would seem that for the duration of the lock period, users cannot unstake
 
     // If `rewardPerBlock == 0`, then `totalRewardAmount == 0` and we have div by zero in `getAlgoReward`.
     // So we cannot have zero reward per block without fully duplicating the reward logic for ALGO rewards.
