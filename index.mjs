@@ -210,9 +210,9 @@ const step = async () => {
 await Promise.allSettled([
 	ctc.p.Creator({
 		getParams: () => params,
-		deployed: () => {
+		deployed: async () => {
 			console.log('creator saw deploy confirmed')
-			run1st2tAccs(info)
+			await run1st2tAccs(info)
 		},
 	}),
 	ctcUser.p.User({
