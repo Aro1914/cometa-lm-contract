@@ -123,10 +123,12 @@ const run1st2tAccs = async (x) => {
 		await reach.waitUntilTime(present)
 		console.log({
 			// For debugging
-			beginBlock: initial.beginBlock,
-			endBlock: initialState.endBlock,
-			currentBlock: present,
-			window: initialState.endBlock - initialState.beginBlock,
+			beginBlock: reach.bigNumberToNumber(initial.beginBlock),
+			endBlock: reach.bigNumberToNumber(initialState.endBlock),
+			currentBlock: reach.bigNumberToNumber(present),
+			window:
+				reach.bigNumberToNumber(initialState.endBlock) -
+				reach.bigNumberToNumber(initialState.beginBlock),
 		})
 		if ((await reach.getNetworkTime()) >= parseInt(initialState.beginBlock)) {
 			for (i; i < len; i++) {
@@ -169,7 +171,7 @@ const run1st2tAccs = async (x) => {
 			console.log(
 				'Waiting, blocks remaining to begin block',
 				reach.bigNumberToNumber(initialState.beginBlock) -
-					(await reach.getNetworkTime())
+					reach.bigNumberToNumber(await reach.getNetworkTime())
 			)
 		}
 		present = present.add(5)
