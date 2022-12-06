@@ -59,16 +59,16 @@ console.log('[+] transferred reward tokens to creator') // this is to enable the
 
 const params = {
 	beneficiary: admin.getAddress(),
-	creationFee: 10, // 0.1%, 
+	creationFee: 10, // 0.1%,
 	// 1. attracts a 1,000 Algo creationAlgoFeeToPay from the totalAlgoRewardAmount of 1,000,000 Algos
 	// 2. attracts a 10,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 10,000,000 Aro1914s
 	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
 	stakeToken,
 	rewardToken,
-	beginBlock: (await reach.getNetworkTime()) + 100, // 100 blocks from the point of creation
-	endBlock: (await reach.getNetworkTime()) + 200, // 200 blocks after the begin block begins
-	totalRewardAmount: 10_000_000, // 10,000,000 Reward tokens
-	totalAlgoRewardAmount: reach.parseCurrency(1_000_000), // 1,000,000 Algos 
+	beginBlock: (await reach.getNetworkTime()).add(100), // 100 blocks from the point of creation
+	endBlock: (await reach.getNetworkTime()).add(200), // 200 blocks after the begin block begins
+	totalRewardAmount: 1_000_000, // 1,000,000 Aro1914 tokens
+	totalAlgoRewardAmount: reach.parseCurrency(1_000_000), // 1,000,000 Algos
 	lockLengthBlocks: 50, // 1. 50 farm blocks from the point of staking, this leaves a window of 50 blocks for the staked tokens to attract claimable rewards,
 	// after which users can then decide to un-stake their stake tokens
 }
@@ -96,9 +96,14 @@ const run1st2tAccs = async (x) => {
 		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to stake
-			console.log({ beginBlock: initial.beginBlock, currentBlock: present })
+			console.log({
+				beginBlock: reach.bigNumberToNumber(initialState.beginBlock),
+				currentBlock: reach.bigNumberToNumber(present),
+			})
 			console.log('step 3')
-			const response = await ctc.apis.stake() // we have each make the stake
+			const call = await ctc.safeApis.stake() // we have each make the stake
+			const response = call[1]
+			console.log({ response })
 			console.log('step 4')
 			const { now, result } = response
 			console.log('[*] stake successful', {
@@ -116,7 +121,8 @@ const run1st2tAccs = async (x) => {
 	present = await reach.getNetworkTime() // update the current network time
 	while (present.lt(reach.bigNumberToNumber(initialState.endBlock))) {
 		await reach.waitUntilTime(present)
-		console.log({ // For debugging
+		console.log({
+			// For debugging
 			beginBlock: initial.beginBlock,
 			endBlock: initialState.endBlock,
 			currentBlock: present,
@@ -201,25 +207,33 @@ const run1st2tAccs = async (x) => {
 	done = true
 }
 
-const step = async () => {
-	while (!done) {
-		await reach.wait(5)
-	}
-	return false
-}
+const step = () =>
+	new Promise((resolve) => {
+		const delta = 5
+		const fTimer = setInterval(async () => {
+			await reach.wait(delta)
+			if (done) {
+				clearInterval(fTimer)
+				resolve()
+			}
+		}, delta * 1000)
+	})
 
 await Promise.all([
-	ctc.p.Creator({
-		getParams: () => params,
-		deployed: async () => {
-			console.log('creator saw deploy confirmed')
-			await run1st2tAccs(info)
-		},
-	}),
+	step(), // this causes network time to be in constant motion
 	ctcUser.p.User({
+		// user interact must be sent first as the creator interact has a blocking operation
 		deployed: () => {
 			console.log('user saw deploy confirmed')
 		},
 	}),
-	step(),
+	ctc.p.Creator({
+		getParams: () => params,
+		deployed: () =>
+			new Promise(async (resolve) => {
+				console.log('creator saw deploy confirmed')
+				await run1st2tAccs(info)
+				resolve()
+			}),
+	}),
 ])
