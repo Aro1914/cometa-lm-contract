@@ -2,6 +2,7 @@ import { loadStdlib } from '@reach-sh/stdlib'
 import * as backend from './build/index.main.mjs'
 const reach = loadStdlib()
 const fmt = (x) => reach.formatCurrency(x, 4)
+const b2N = (x) => reach.bigNumberToNumber(x)
 
 const adminStartingBalance = reach.parseCurrency(100)
 const creatorStartingBalance = reach.parseCurrency(2_000_000)
@@ -97,8 +98,8 @@ const run1st2tAccs = async (x) => {
 		try {
 			// try to stake
 			console.log({
-				beginBlock: reach.bigNumberToNumber(initialState.beginBlock),
-				currentBlock: reach.bigNumberToNumber(present),
+				beginBlock: b2N(initialState.beginBlock),
+				currentBlock: b2N(present),
 			})
 			console.log('step 3')
 			const call = await ctc.safeApis.stake() // we have each make the stake
@@ -119,18 +120,18 @@ const run1st2tAccs = async (x) => {
 
 	i = 0
 	present = await reach.getNetworkTime() // update the current network time
-	while (present.lt(reach.bigNumberToNumber(initialState.endBlock))) {
+	while (present.lt(initialState.endBlock)) {
 		await reach.waitUntilTime(present)
+		present = present.add(5)
 		console.log({
 			// For debugging
-			beginBlock: reach.bigNumberToNumber(initial.beginBlock),
-			endBlock: reach.bigNumberToNumber(initialState.endBlock),
-			currentBlock: reach.bigNumberToNumber(present),
-			window:
-				reach.bigNumberToNumber(initialState.endBlock) -
-				reach.bigNumberToNumber(initialState.beginBlock),
+			beginBlock: b2N(initial.beginBlock),
+			endBlock: b2N(initialState.endBlock),
+			currentBlock: b2N(await reach.getNetworkTime()),
+			present: b2N(present),
+			window: b2N(initialState.endBlock) - b2N(initialState.beginBlock),
 		})
-		if ((await reach.getNetworkTime()) >= parseInt(initialState.beginBlock)) {
+		if (b2N(await reach.getNetworkTime()) >= b2N(initialState.beginBlock)) {
 			for (i; i < len; i++) {
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
 					await testAccounts[i].balancesOf([null, rewardToken])
@@ -160,7 +161,7 @@ const run1st2tAccs = async (x) => {
 						rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
 						earnedAlgo: fmt(earnedAlgo),
 						earnedReward: fmt(earnedReward),
-						timeOfClaim: reach.bigNumberToNumber(now),
+						timeOfClaim: b2N(now),
 					})
 				} catch (error) {
 					console.log('[!] failed to claim', { error })
@@ -170,11 +171,9 @@ const run1st2tAccs = async (x) => {
 		} else {
 			console.log(
 				'Waiting, blocks remaining to begin block',
-				reach.bigNumberToNumber(initialState.beginBlock) -
-					reach.bigNumberToNumber(await reach.getNetworkTime())
+				b2N(initialState.beginBlock) - b2N(await reach.getNetworkTime())
 			)
 		}
-		present = present.add(5)
 	}
 
 	i = 0
@@ -200,7 +199,7 @@ const run1st2tAccs = async (x) => {
 				stakeTokBalAfter: fmt(stakeTokBalanceAfterClaim),
 				earnedAlgo: fmt(earnedAlgo),
 				unStakedAmount: fmt(unStakedAmount),
-				timeOfClaim: reach.bigNumberToNumber(now),
+				timeOfClaim: b2N(now),
 			})
 		} catch (error) {
 			console.log('[!] failed to unstake', { error })
@@ -222,7 +221,7 @@ const step = () =>
 	})
 
 await Promise.all([
-	step(), // this causes network time to be in constant motion	
+	step(), // this causes network time to be in constant motion
 	ctc.p.Creator({
 		getParams: () => params,
 		deployed: () =>
