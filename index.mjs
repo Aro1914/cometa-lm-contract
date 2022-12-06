@@ -4,7 +4,7 @@ const reach = loadStdlib()
 const fmt = (x) => reach.formatCurrency(x, 4)
 
 const adminStartingBalance = reach.parseCurrency(100)
-const creatorStartingBalance = reach.parseCurrency(2_000_010)
+const creatorStartingBalance = reach.parseCurrency(2_000_000)
 const startingBalance = reach.parseCurrency(100)
 
 const admin = await reach.newTestAccount(adminStartingBalance)
@@ -57,24 +57,19 @@ await creator.tokenAccept(rewardToken)
 await reach.transfer(admin, creator, 2_000_000, rewardToken)
 console.log('[+] transferred reward tokens to creator') // this is to enable the creator send in some reward tokens to be distributed to users in rewards
 
-const cF = 10
-const cFTP = 1 * (cF / 100)
-const tRA = 1_000_000
-const cFV = tRA * cFTP
-const fACF = 100
-
 const params = {
 	beneficiary: admin.getAddress(),
-	creationFee: cF, // 0.1%,
-	flatAlgoCreationFee: reach.parseCurrency(fACF), // 100 Algos
+	creationFee: 10, // 0.1%, 
+	// 1. attracts a 1,000 Algo creationAlgoFeeToPay from the totalAlgoRewardAmount of 1,000,000 Algos
+	// 2. attracts a 10,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 10,000,000 Aro1914s
+	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
 	stakeToken,
 	rewardToken,
-	beginBlock: (await reach.getNetworkTime()) + 100, // 10 blocks from the point of creation
-	endBlock: (await reach.getNetworkTime()) + 200, // 1000 blocks after the begin block begins
-	totalRewardAmount: 1_000_000, // 1000000 Reward tokens
-	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. Some Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
-	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
-	lockLengthBlocks: 5, // 1. 500 blocks from the point of staking, this leaves a window of 500 blocks for the contract to start giving out rewards,
+	beginBlock: (await reach.getNetworkTime()) + 100, // 100 blocks from the point of creation
+	endBlock: (await reach.getNetworkTime()) + 200, // 200 blocks after the begin block begins
+	totalRewardAmount: 10_000_000, // 10,000,000 Reward tokens
+	totalAlgoRewardAmount: reach.parseCurrency(1_000_000), // 1,000,000 Algos 
+	lockLengthBlocks: 50, // 1. 50 farm blocks from the point of staking, this leaves a window of 50 blocks for the staked tokens to attract claimable rewards,
 	// after which users can then decide to un-stake their stake tokens
 }
 
@@ -91,6 +86,7 @@ const run1st2tAccs = async (x) => {
 	console.log('step 1')
 	let initial = await ctc.v.initial()
 	let initialState = initial[1]
+	let present = await reach.getNetworkTime()
 	const stake = 120
 
 	const len = 2
@@ -100,6 +96,7 @@ const run1st2tAccs = async (x) => {
 		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to stake
+			console.log({ beginBlock: initial.beginBlock, currentBlock: present })
 			console.log('step 3')
 			const response = await ctc.apis.stake() // we have each make the stake
 			console.log('step 4')
@@ -116,10 +113,15 @@ const run1st2tAccs = async (x) => {
 	}
 
 	i = 0
-	let present = await reach.getNetworkTime()
+	present = await reach.getNetworkTime() // update the current network time
 	while (present.lt(reach.bigNumberToNumber(initialState.endBlock))) {
 		await reach.waitUntilTime(present)
-		present = present.add(5)
+		console.log({ // For debugging
+			beginBlock: initial.beginBlock,
+			endBlock: initialState.endBlock,
+			currentBlock: present,
+			window: initialState.endBlock - initialState.beginBlock,
+		})
 		if ((await reach.getNetworkTime()) >= parseInt(initialState.beginBlock)) {
 			for (i; i < len; i++) {
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
@@ -164,6 +166,7 @@ const run1st2tAccs = async (x) => {
 					(await reach.getNetworkTime())
 			)
 		}
+		present = present.add(5)
 	}
 
 	i = 0
