@@ -205,6 +205,7 @@ const step = async () => {
 	while (!done) {
 		await reach.wait(5)
 	}
+	return false
 }
 
 await Promise.allSettled([
