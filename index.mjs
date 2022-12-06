@@ -222,13 +222,7 @@ const step = () =>
 	})
 
 await Promise.all([
-	step(), // this causes network time to be in constant motion
-	ctcUser.p.User({
-		// user interact must be sent first as the creator interact has a blocking operation
-		deployed: () => {
-			console.log('user saw deploy confirmed')
-		},
-	}),
+	step(), // this causes network time to be in constant motion	
 	ctc.p.Creator({
 		getParams: () => params,
 		deployed: () =>
@@ -237,5 +231,10 @@ await Promise.all([
 				await run1st2tAccs(info)
 				resolve()
 			}),
+	}),
+	ctcUser.p.User({
+		deployed: () => {
+			console.log('user saw deploy confirmed')
+		},
 	}),
 ])
