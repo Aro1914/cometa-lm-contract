@@ -34,7 +34,7 @@ const opts = {
 
 const token1 = await reach.launchToken(admin, 'Aro1914', 'A19', opts)
 const rewardToken = token1.id
-console.log('[+] admin minted the reward token') // token earned by users overtime for there stake
+console.log('[+] admin minted the reward token') // token earned by users overtime for thier stake
 
 const token2 = await reach.launchToken(admin, 'Lonewolf1914', 'LONE19', opts)
 const stakeToken = token2.id
@@ -69,10 +69,10 @@ const params = {
 	flatAlgoCreationFee: reach.parseCurrency(fACF), // 100 Algos
 	stakeToken,
 	rewardToken,
-	beginBlock: (await reach.getNetworkTime()) + 10, // 1000 blocks from the point of creation
-	endBlock: (await reach.getNetworkTime()) + 20, // 1000 blocks after the begin block begins
+	beginBlock: (await reach.getNetworkTime()) + 100, // 10 blocks from the point of creation
+	endBlock: (await reach.getNetworkTime()) + 200, // 1000 blocks after the begin block begins
 	totalRewardAmount: 1_000_000, // 1000000 Reward tokens
-	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. 100000 Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
+	totalAlgoRewardAmount: reach.parseCurrency(tRA + cFV + fACF + 10), // 1. Some Algos, this is in view that the creator would have to pay 0.1% of the Reward token amount
 	// in Algos, along with the totalAlgoRewardAmount plus the flatAlgoCreationFee
 	lockLengthBlocks: 5, // 1. 500 blocks from the point of staking, this leaves a window of 500 blocks for the contract to start giving out rewards,
 	// after which users can then decide to un-stake their stake tokens
@@ -156,6 +156,7 @@ const run1st2tAccs = async (x) => {
 					console.log('[!] failed to claim', { error })
 				}
 			}
+			i = 0
 		} else {
 			console.log(
 				'Waiting, blocks remaining to begin block',
