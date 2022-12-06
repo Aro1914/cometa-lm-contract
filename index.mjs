@@ -74,15 +74,12 @@ const params = {
 	// after which users can then decide to un-stake their stake tokens
 }
 
-const ctc = creator.contract(backend)
-console.log('[+] deployed the main contract')
-
-const info = ctc.getInfo()
-const ctcUser = user.contract(backend, info)
-console.log('[+] attached user to the main contract')
-
 let done = false
 
+/**
+ * Runs the first two test accounts through these steps:
+ * stake -> claim -> unstake
+ */
 const run1st2tAccs = async (x) => {
 	console.log('step 1')
 	let initial = await ctc.v.initial()
@@ -121,8 +118,9 @@ const run1st2tAccs = async (x) => {
 	i = 0
 	present = await reach.getNetworkTime() // update the current network time
 	while (present.lt(initialState.endBlock)) {
+		// this loops until after the endBlock
 		await reach.waitUntilTime(present)
-		present = present.add(5)
+		present = present.add(1)
 		console.log({
 			// For debugging
 			beginBlock: b2N(initial.beginBlock),
@@ -131,7 +129,11 @@ const run1st2tAccs = async (x) => {
 			present: b2N(present),
 			window: b2N(initialState.endBlock) - b2N(initialState.beginBlock),
 		})
-		if (b2N(await reach.getNetworkTime()) >= b2N(initialState.beginBlock)) {
+		// have the user wait until just about 10 blocks before the endBlock, before an attempt to claim
+		if (
+			b2N(await reach.getNetworkTime()) >=
+			b2N(initialState.beginBlock) + 90
+		) {
 			for (i; i < len; i++) {
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
 					await testAccounts[i].balancesOf([null, rewardToken])
@@ -142,7 +144,7 @@ const run1st2tAccs = async (x) => {
 					const {
 						now,
 						result: [
-							claimedReward /* in reward tokens */,
+							claimedReward /* in Aro1914 tokens */,
 							extraAlgoReward /* in Algos */,
 						],
 					} = response
@@ -210,7 +212,7 @@ const run1st2tAccs = async (x) => {
 
 const step = () =>
 	new Promise((resolve) => {
-		const delta = 5
+		const delta = 1
 		const fTimer = setInterval(async () => {
 			await reach.wait(delta)
 			if (done) {
@@ -220,20 +222,64 @@ const step = () =>
 		}, delta * 1000)
 	})
 
-await Promise.all([
-	step(), // this causes network time to be in constant motion
-	ctc.p.Creator({
-		getParams: () => params,
-		deployed: () =>
-			new Promise(async (resolve) => {
-				console.log('creator saw deploy confirmed')
-				await run1st2tAccs(info)
-				resolve()
-			}),
-	}),
-	ctcUser.p.User({
-		deployed: () => {
-			console.log('user saw deploy confirmed')
-		},
-	}),
-])
+const ctc = creator.contract(backend)
+console.log('[+] deployed the main contract')
+ctc.p.Creator({
+	getParams: () => params,
+	deployed: async () => {
+		await new Promise(async (resolve) => {
+			console.log('[+] creator saw deploy confirmed')
+			const info = await ctc.getInfo()
+			await run1st2tAccs(info)
+			// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
+			const [
+				algoBalanceBeforeClaim,
+				stakeTokBalanceBeforeClaim,
+				rewardTokBalanceBeforeClaim,
+			] = await admin.balancesOf([null, stakeToken, rewardToken])
+			try {
+				const ctcAdmin = admin.contract(backend, info)
+				console.log('[+] attached admin (beneficiary) to the main contract')
+				const response = await ctcAdmin.apis.claimFees()
+				const {
+					now,
+					result: [
+						claimedReward /* in Aro1914 tokens */,
+						extraAlgoReward /* in Algos */,
+					],
+				} = response
+				const [earnedAlgo, earnedReward] = [
+					algoBalanceAfterClaim - algoBalanceBeforeClaim,
+					rewardTokBalanceAfterClaim - rewardTokBalanceBeforeClaim,
+				]
+				const [algoBalanceAfterClaim, rewardTokBalanceAfterClaim] =
+					await admin.balancesOf([null, rewardToken])
+				console.log('[*] admin (beneficiary) claimFees call successful', {
+					claimedReward: fmt(claimedReward),
+					extraAlgoReward: fmt(extraAlgoReward),
+					algoBalBefore: fmt(algoBalanceBeforeClaim),
+					rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
+					algoBalAfter: fmt(algoBalanceAfterClaim),
+					rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
+					earnedAlgo: fmt(earnedAlgo),
+					earnedReward: fmt(earnedReward),
+					timeOfClaim: b2N(now),
+				})
+			} catch (error) {
+				console.log('[!] admin (beneficiary) failed to claimFees', { error })
+			}
+			resolve()
+		})
+	},
+})
+
+const info = await ctc.getInfo()
+const ctcUser = user.contract(backend, info)
+console.log('[+] attached user to the main contract')
+ctcUser.p.User({
+	deployed: () => {
+		console.log('[+] user saw deploy confirmed')
+	},
+})
+
+await step() // this causes network time to be in constant motion
