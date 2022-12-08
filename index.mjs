@@ -67,14 +67,14 @@ const params = {
 	stakeToken,
 	rewardToken,
 	beginBlock: (await reach.getNetworkTime()).add(100), // 100 blocks from the point of creation
-	endBlock: (await reach.getNetworkTime()).add(200), // 200 blocks after the begin block begins
+	endBlock: (await reach.getNetworkTime()).add(200), // 100 blocks after the begin block begins, 200 blocks from the point of creation
 	totalRewardAmount: 1_000_000, // 1,000,000 Aro1914 tokens
 	totalAlgoRewardAmount: reach.parseCurrency(1_000_000), // 1,000,000 Algos
 	lockLengthBlocks: 50, // 1. 50 farm blocks from the point of staking, this leaves a window of 50 blocks for the staked tokens to attract claimable rewards,
 	// after which users can then decide to un-stake their stake tokens
 }
 
-let done = false
+// let done = false
 
 /**
  * Runs the first two test accounts through these steps:
@@ -147,9 +147,9 @@ const run1st2tAccs = async (x) => {
 						claimedReward: fmt(claimedReward),
 						extraAlgoReward: fmt(extraAlgoReward),
 						algoBalBefore: fmt(algoBalanceBeforeClaim),
-						rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
+						rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
 						algoBalAfter: fmt(algoBalanceAfterClaim),
-						rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
+						rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
 						earnedAlgo: earnedAlgo,
 						earnedReward: earnedReward,
 						timeOfClaim: b2N(now),
@@ -187,15 +187,15 @@ const run1st2tAccs = async (x) => {
 			const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
 				await testAccounts[i].balancesOf([null, stakeToken])
 			const [earnedAlgo, unStakedAmount] = [
-				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-				fmt(stakeTokBalanceAfterClaim) - fmt(stakeTokBalanceBeforeClaim),
+				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim), // this could return a negative value if the amount of rewards did not offset the gas fees for the API call
+				b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
 			]
 			console.log('[*] unstake call successful', {
 				toUnSkate: b2N(result),
 				algoBalBefore: fmt(algoBalanceBeforeClaim),
-				stakeTokenBalBefore: fmt(stakeTokBalanceBeforeClaim),
+				stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
 				algoBalAfter: fmt(algoBalanceAfterClaim),
-				stakeTokBalAfter: fmt(stakeTokBalanceAfterClaim),
+				stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
 				earnedAlgo: earnedAlgo, // applying stdlib.formatCurrency is simply redundant at this point. If you are reading this diff, know I got slapped in the face for actually doing that
 				unStakedAmount: unStakedAmount, // applying stdlib.formatCurrency here, is, also redundant. Ignore the use of the term 'redundant', believe me you don't want to do that
 				timeOfClaim: b2N(now),
@@ -204,7 +204,6 @@ const run1st2tAccs = async (x) => {
 			console.log('[!] failed to unstake', { error })
 		}
 	}
-	done = true
 }
 
 const step = () =>
@@ -219,70 +218,98 @@ const step = () =>
 		}, delta * 1000)
 	})
 
+const logBalances = async () => {
+	const len = [admin, creator, user, ...testAccounts].length
+	let i = 0
+	for (i; i < len; i++) {
+		const [
+			algoBalanceBeforeClaim,
+			stakeTokBalanceBeforeClaim,
+			rewardTokBalanceBeforeClaim,
+		] = await [admin, creator, user, ...testAccounts][i].balancesOf([
+			null,
+			stakeToken,
+			rewardToken,
+		])
+		console.log(
+			'[*] ' +
+				['admin', 'creator', 'user', 'tAcc1', 'tAcc2', 'tAcc3', 'tAcc4'][i],
+			{
+				Algo: fmt(algoBalanceBeforeClaim),
+				Aro1914: b2N(rewardTokBalanceBeforeClaim),
+				Lonewolf1914: b2N(stakeTokBalanceBeforeClaim),
+			}
+		)
+	}
+}
+
+await logBalances()
+
 const ctc = creator.contract(backend)
 console.log('[+] deployed the main contract')
 ctc.p.Creator({
 	getParams: () => params,
 	deployed: async () => {
-		await new Promise(async (resolve) => {
-			console.log('[+] creator saw deploy confirmed')
-			const info = await ctc.getInfo()
-			await run1st2tAccs(info)
-			// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
+		console.log('[+] creator saw deploy confirmed')
+		const info = await ctc.getInfo()
+		await run1st2tAccs(info)
+		// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
+		const [
+			algoBalanceBeforeClaim,
+			stakeTokBalanceBeforeClaim,
+			rewardTokBalanceBeforeClaim,
+		] = await admin.balancesOf([null, stakeToken, rewardToken])
+		try {
+			const ctcAdmin = admin.contract(backend, info)
+			console.log('[+] attached admin (beneficiary) to the main contract')
+			const response = await ctcAdmin.apis.claimFees()
+			const {
+				now,
+				result: [
+					claimedReward /* in Aro1914 tokens */,
+					extraAlgoReward /* in Algos */,
+				],
+			} = response
 			const [
-				algoBalanceBeforeClaim,
-				stakeTokBalanceBeforeClaim,
-				rewardTokBalanceBeforeClaim,
+				algoBalanceAfterClaim,
+				stakeTokBalanceAfterClaim,
+				rewardTokBalanceAfterClaim,
 			] = await admin.balancesOf([null, stakeToken, rewardToken])
-			try {
-				const ctcAdmin = admin.contract(backend, info)
-				console.log('[+] attached admin (beneficiary) to the main contract')
-				const response = await ctcAdmin.apis.claimFees()
-				const {
-					now,
-					result: [
-						claimedReward /* in Aro1914 tokens */,
-						extraAlgoReward /* in Algos */,
-					],
-				} = response
-				const [
-					algoBalanceAfterClaim,
-					stakeTokBalanceAfterClaim,
-					rewardTokBalanceAfterClaim,
-				] = await admin.balancesOf([null, stakeToken, rewardToken])
-				const [earnedAlgo, earnedReward] = [
-					fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-					fmt(rewardTokBalanceAfterClaim) - fmt(rewardTokBalanceBeforeClaim),
-				]
-				console.log('[*] admin (beneficiary) claimFees call successful', {
-					claimedReward: fmt(claimedReward),
-					extraAlgoReward: fmt(extraAlgoReward),
-					algoBalBefore: fmt(algoBalanceBeforeClaim),
-					rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
-					stakeTokBalanceBefore: fmt(stakeTokBalanceBeforeClaim),
-					algoBalAfter: fmt(algoBalanceAfterClaim),
-					rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
-					stakeTokBalanceAfter: fmt(stakeTokBalanceAfterClaim),
-					earnedAlgo: earnedAlgo,
-					earnedReward: earnedReward,
-					timeOfClaim: b2N(now),
-				})
-			} catch (error) {
-				console.log('[!] admin (beneficiary) failed to claimFees', { error })
-			}
-			done = true
-			resolve()
-		})
+			const [earnedAlgo, earnedReward] = [
+				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
+				b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
+			]
+			console.log('[*] admin (beneficiary) claimFees call successful', {
+				claimedReward: b2N(claimedReward),
+				extraAlgoReward: fmt(extraAlgoReward),
+				algoBalBefore: fmt(algoBalanceBeforeClaim),
+				rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
+				stakeTokBalanceBefore: b2N(stakeTokBalanceBeforeClaim),
+				algoBalAfter: fmt(algoBalanceAfterClaim),
+				rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
+				stakeTokBalanceAfter: b2N(stakeTokBalanceAfterClaim),
+				earnedAlgo: earnedAlgo,
+				earnedReward: earnedReward,
+				timeOfClaim: b2N(now),
+			})
+		} catch (error) {
+			console.log('[!] admin (beneficiary) failed to claimFees', { error })
+		}
+
+		await logBalances()
+		process.exit(0)
 	},
 })
 
 const info = await ctc.getInfo()
 const ctcUser = user.contract(backend, info)
 console.log('[+] attached user to the main contract')
+
 ctcUser.p.User({
 	deployed: () => {
 		console.log('[+] user saw deploy confirmed')
 	},
 })
 
-await step() // this causes network time to be in constant motion
+// await step() // this causes network time to be in constant motion
+// process.exit(0)
