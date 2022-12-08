@@ -5,3 +5,6 @@ tls/
 Dockerfile
 .dockerignore
 package.json
+workingPromises.js
+package.json
+.vscode
