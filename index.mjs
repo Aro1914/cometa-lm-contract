@@ -34,11 +34,11 @@ const opts = {
 
 const token1 = await reach.launchToken(admin, 'Aro1914', 'A19', opts)
 const rewardToken = token1.id
-console.log('[+] admin minted the reward token') // token earned by users overtime for thier stake
+console.log('[+] admin minted the reward token: Aro1914, supply: 1,000,000,000') // token earned by users overtime for thier stake
 
 const token2 = await reach.launchToken(admin, 'Lonewolf1914', 'LONE19', opts)
 const stakeToken = token2.id
-console.log('[+] admin minted the stake token') // token to be staked by users, usually LP tokens, but in this case could be DAO tokens
+console.log('[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000') // token to be staked by users, usually LP tokens, but in this case could be DAO tokens
 
 const transferSTokToTestAccts = async (tA) => {
 	const len = tA.length
@@ -50,12 +50,12 @@ const transferSTokToTestAccts = async (tA) => {
 	}
 }
 await transferSTokToTestAccts(testAccounts)
-console.log('[+] transferred stake tokens to test accounts') // this is to enable the test users own the stake token to use for staking
+console.log('[+] transferred 1,000 Lonewolf1914 to each test account') // this is to enable the test users own the stake token to use for staking
 
 await creator.tokenAccept(stakeToken)
 await creator.tokenAccept(rewardToken)
 await reach.transfer(admin, creator, 2_000_000, rewardToken)
-console.log('[+] transferred reward tokens to creator') // this is to enable the creator send in some reward tokens to be distributed to users in rewards
+console.log('[+] transferred 2,000,000 Aro1914 to creator') // this is to enable the creator send in some reward tokens to be distributed to users in rewards
 
 const params = {
 	beneficiary: admin.getAddress(),
@@ -216,6 +216,7 @@ const logBalances = async () => {
 			stakeToken,
 			rewardToken,
 		])
+		console.log('Current account balances')
 		console.log(
 			'[*] ' +
 				['admin', 'creator', 'user', 'tAcc1', 'tAcc2', 'tAcc3', 'tAcc4'][i],
