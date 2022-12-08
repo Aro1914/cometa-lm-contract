@@ -141,7 +141,7 @@ const run1st2tAccs = async (x) => {
 						b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
 					]
 					console.log('[*] claim call successful', {
-						claimedReward: fmt(claimedReward),
+						claimedReward: b2N(claimedReward),
 						extraAlgoReward: fmt(extraAlgoReward),
 						algoBalBefore: fmt(algoBalanceBeforeClaim),
 						rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
