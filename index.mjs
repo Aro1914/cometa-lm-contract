@@ -163,7 +163,7 @@ const run1st2tAccs = async (x) => {
 		} else {
 			if (b2N(present) % 10 == 0)
 				console.log(
-					'remainingBlocks',
+					'[-] blocksRemaining',
 					b2N(initialState.endBlock) - 10 - b2N(await reach.getNetworkTime()),
 					'beginBlock:',
 					b2N(initialState.beginBlock),
@@ -310,6 +310,3 @@ ctcUser.p.User({
 		console.log('[+] user saw deploy confirmed')
 	},
 })
-
-// await step() // this causes network time to be in constant motion
-// process.exit(0)
