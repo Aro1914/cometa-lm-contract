@@ -99,7 +99,6 @@ const run1st2tAccs = async (x) => {
 			// console.log({ safe: ctc.safeApis, unsafe: ctc.apis, error: ctc.apis.Api })
 			// const call = await ctc.safeApis.stake(stake) // we have each make the stake
 			// const response = call[1]apis.stake(stake) // we have each make the stake
-			console.log({ response })
 			const response = await ctc.apis.stake(stake)
 			const { now, result } = response
 			console.log('[*] stake successful', {
@@ -119,14 +118,6 @@ const run1st2tAccs = async (x) => {
 		// this loops until after the endBlock
 		await reach.waitUntilTime(present)
 		present = present.add(1)
-		console.log({
-			// For debugging
-			beginBlock: b2N(initialState.beginBlock),
-			endBlock: b2N(initialState.endBlock),
-			currentBlock: b2N(await reach.getNetworkTime()),
-			present: b2N(present),
-			window: b2N(initialState.endBlock) - b2N(initialState.beginBlock),
-		})
 		// have the user wait until just about 10 blocks before the endBlock, before an attempt to claim
 		if (
 			b2N(await reach.getNetworkTime()) >=
@@ -153,14 +144,14 @@ const run1st2tAccs = async (x) => {
 						b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
 					]
 					console.log('[*] claim call successful', {
-						claimedReward: b2N(claimedReward),
+						claimedReward: fmt(claimedReward),
 						extraAlgoReward: fmt(extraAlgoReward),
 						algoBalBefore: fmt(algoBalanceBeforeClaim),
-						rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
+						rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
 						algoBalAfter: fmt(algoBalanceAfterClaim),
-						rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
-						earnedAlgo: fmt(earnedAlgo),
-						earnedReward: b2N(earnedReward),
+						rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
+						earnedAlgo: earnedAlgo,
+						earnedReward: earnedReward,
 						timeOfClaim: b2N(now),
 					})
 				} catch (error) {
@@ -170,10 +161,17 @@ const run1st2tAccs = async (x) => {
 			i = 0
 			break
 		} else {
-			console.log(
-				'Waiting, blocks remaining to point to claim',
-				b2N(initialState.endBlock) - 10 - b2N(await reach.getNetworkTime())
-			)
+			if (b2N(present) % 5 == 0)
+				console.log(
+					'remainingBlocks',
+					b2N(initialState.endBlock) - 10 - b2N(await reach.getNetworkTime()),
+					'beginBlock:',
+					b2N(initialState.beginBlock),
+					'endBlock:',
+					b2N(initialState.endBlock),
+					'present:',
+					b2N(present)
+				)
 		}
 	}
 
@@ -190,16 +188,16 @@ const run1st2tAccs = async (x) => {
 				await testAccounts[i].balancesOf([null, stakeToken])
 			const [earnedAlgo, unStakedAmount] = [
 				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-				b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
+				fmt(stakeTokBalanceAfterClaim) - fmt(stakeTokBalanceBeforeClaim),
 			]
 			console.log('[*] unstake call successful', {
 				toUnSkate: b2N(result),
 				algoBalBefore: fmt(algoBalanceBeforeClaim),
-				stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
+				stakeTokenBalBefore: fmt(stakeTokBalanceBeforeClaim),
 				algoBalAfter: fmt(algoBalanceAfterClaim),
-				stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
-				earnedAlgo: fmt(earnedAlgo), // applying stdlib.formatCurrency is simply redundant at this point, but who cares... LOL... after all I've been through with code
-				unStakedAmount: b2N(unStakedAmount), // applying stdlib.bigNumberToNumber here, is, also redundant, but still who gives a... (^*_*)^
+				stakeTokBalAfter: fmt(stakeTokBalanceAfterClaim),
+				earnedAlgo: earnedAlgo, // applying stdlib.formatCurrency is simply redundant at this point. If you are reading this diff, know I got slapped in the face for actually doing that
+				unStakedAmount: unStakedAmount, // applying stdlib.formatCurrency here, is, also redundant. Ignore the use of the term 'redundant', believe me you don't want to do that
 				timeOfClaim: b2N(now),
 			})
 		} catch (error) {
@@ -247,21 +245,26 @@ ctc.p.Creator({
 						extraAlgoReward /* in Algos */,
 					],
 				} = response
-				const [algoBalanceAfterClaim, rewardTokBalanceAfterClaim] =
-					await admin.balancesOf([null, rewardToken])
+				const [
+					algoBalanceAfterClaim,
+					stakeTokBalanceAfterClaim,
+					rewardTokBalanceAfterClaim,
+				] = await admin.balancesOf([null, stakeToken, rewardToken])
 				const [earnedAlgo, earnedReward] = [
 					fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-					b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
+					fmt(rewardTokBalanceAfterClaim) - fmt(rewardTokBalanceBeforeClaim),
 				]
 				console.log('[*] admin (beneficiary) claimFees call successful', {
-					claimedReward: b2N(claimedReward),
+					claimedReward: fmt(claimedReward),
 					extraAlgoReward: fmt(extraAlgoReward),
 					algoBalBefore: fmt(algoBalanceBeforeClaim),
-					rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
+					rewardTokenBalBefore: fmt(rewardTokBalanceBeforeClaim),
+					stakeTokBalanceBefore: fmt(stakeTokBalanceBeforeClaim),
 					algoBalAfter: fmt(algoBalanceAfterClaim),
-					rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
-					earnedAlgo: fmt(earnedAlgo),
-					earnedReward: b2N(earnedReward),
+					rewardTokBalAfter: fmt(rewardTokBalanceAfterClaim),
+					stakeTokBalanceAfter: fmt(stakeTokBalanceAfterClaim),
+					earnedAlgo: earnedAlgo,
+					earnedReward: earnedReward,
 					timeOfClaim: b2N(now),
 				})
 			} catch (error) {
