@@ -81,7 +81,6 @@ let done = false
  * stake -> claim -> unstake
  */
 const run1st2tAccs = async (x) => {
-	console.log('step 1')
 	let initial = await ctc.v.initial()
 	let initialState = initial[1]
 	let present = await reach.getNetworkTime()
@@ -90,7 +89,6 @@ const run1st2tAccs = async (x) => {
 	const len = 2
 	let i = 0
 	for (i; i < len; i++) {
-		console.log('step 2')
 		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to stake
@@ -98,11 +96,11 @@ const run1st2tAccs = async (x) => {
 				beginBlock: b2N(initialState.beginBlock),
 				currentBlock: b2N(present),
 			})
-			console.log('step 3')
-			const call = await ctc.safeApis.stake() // we have each make the stake
-			const response = call[1]
+			// console.log({ safe: ctc.safeApis, unsafe: ctc.apis, error: ctc.apis.Api })
+			// const call = await ctc.safeApis.stake(stake) // we have each make the stake
+			// const response = call[1]apis.stake(stake) // we have each make the stake
 			console.log({ response })
-			console.log('step 4')
+			const response = await ctc.
 			const { now, result } = response
 			console.log('[*] stake successful', {
 				assertResultEqualToStake: fmt(result) == stake,
@@ -123,7 +121,7 @@ const run1st2tAccs = async (x) => {
 		present = present.add(1)
 		console.log({
 			// For debugging
-			beginBlock: b2N(initial.beginBlock),
+			beginBlock: b2N(initialState.beginBlock),
 			endBlock: b2N(initialState.endBlock),
 			currentBlock: b2N(await reach.getNetworkTime()),
 			present: b2N(present),
