@@ -21,11 +21,10 @@ user.setDebugLabel('user')
 console.log('[+] user account created')
 
 const testAccounts = await reach.newTestAccounts(4, startingBalance)
-const [add1, add2, add3, add4] = testAccounts.map((acc, i) => {
+testAccounts.forEach((acc, i) => {
 	acc.setDebugLabel(`tAcc${i + 1}`)
-	return reach.formatAddress(acc.getAddress())
 })
-// const [tAcc1, tAcc2, tAcc3, tAcc4] = testAccounts
+
 console.log('[+] test accounts created')
 
 const opts = {
@@ -73,8 +72,6 @@ const params = {
 	lockLengthBlocks: 50, // 1. 50 farm blocks from the point of staking, this leaves a window of 50 blocks for the staked tokens to attract claimable rewards,
 	// after which users can then decide to un-stake their stake tokens
 }
-
-// let done = false
 
 /**
  * Runs the first two test accounts through these steps:
@@ -205,18 +202,6 @@ const run1st2tAccs = async (x) => {
 		}
 	}
 }
-
-const step = () =>
-	new Promise((resolve) => {
-		const delta = 1
-		const fTimer = setInterval(async () => {
-			await reach.wait(delta)
-			if (done) {
-				clearInterval(fTimer)
-				resolve()
-			}
-		}, delta * 1000)
-	})
 
 const logBalances = async () => {
 	const len = [admin, creator, user, ...testAccounts].length
