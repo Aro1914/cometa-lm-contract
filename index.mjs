@@ -161,7 +161,7 @@ const run1st2tAccs = async (x) => {
 			i = 0
 			break
 		} else {
-			if (b2N(present) % 5 == 0)
+			if (b2N(present) % 10 == 0)
 				console.log(
 					'remainingBlocks',
 					b2N(initialState.endBlock) - 10 - b2N(await reach.getNetworkTime()),
