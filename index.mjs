@@ -4,6 +4,8 @@ const reach = loadStdlib()
 const fmt = (x) => reach.formatCurrency(x, 4)
 const b2N = (x) => reach.bigNumberToNumber(x)
 
+await reach.wait(1) // this is to ensure that network time is never at 0
+
 const adminStartingBalance = reach.parseCurrency(100)
 const creatorStartingBalance = reach.parseCurrency(2_000_000)
 const startingBalance = reach.parseCurrency(100)
@@ -38,7 +40,9 @@ console.log('[+] admin minted the reward token: Aro1914, supply: 1,000,000,000')
 
 const token2 = await reach.launchToken(admin, 'Lonewolf1914', 'LONE19', opts)
 const stakeToken = token2.id
-console.log('[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000') // token to be staked by users, usually LP tokens, but in this case could be DAO tokens
+console.log(
+	'[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000'
+) // token to be staked by users, usually LP tokens, but in this case could be DAO tokens
 
 const transferSTokToTestAccts = async (tA) => {
 	const len = tA.length
@@ -74,41 +78,122 @@ const params = {
 }
 
 /**
- * Runs the first two test accounts through these steps:
- * stake -> claim -> unstake
+ * This logs to the console the formatted values of a view
  */
-const run1st2tAccs = async (x) => {
-	let initial = await ctc.v.initial()
-	let initialState = initial[1]
+const logView = (state, view) => {
+	if (view[1] == null) console.log('[!] view is not set')
+	else {
+		const values = {}
+		const keys = Object.keys(view[1])
+		const len = keys.length
+		let i = 0
+		for (i; i < len; i++) {
+			const key = keys[i]
+			let value = view[1][key]
+			if (reach.isBigNumber(value))
+				try {
+					value = b2N(value)
+					values[key] = value
+				} catch (error) {
+					if (error.reason == 'overflow') {
+						value = fmt(value)
+						values[key + ' (fmt)'] = value
+					} else {
+						console.log({ error })
+					}
+				}
+		}
+		console.log(`[*] current ${state} view`, values)
+		return values
+	}
+}
+
+/**
+ * Runs the test accounts through these steps...
+ * the first two:
+ * stake -> wait -> claim -> unstake;
+ * the third:
+ * nostake -> wait -> attempt claim -> fail -> catch error;
+ * the forth:
+ * stake -> wait (past the endBlock) -> unstake;
+ */
+const runtAccs = async (x) => {
+	const initial = await ctc.v.initial()
+	const initialState = logView('initial', initial)
+	let global = await ctc.v.global()
+	let globalState = logView('global', global)
 	let present = await reach.getNetworkTime()
 	const stake = 120
 
-	const len = 2
+	console.log('[>] initiating stake calls for test accounts except: tAcc3')
+	const len = 4
 	let i = 0
 	for (i; i < len; i++) {
+		if (i === 2) continue // we have the third test account skip out on staking
+		const testAccount = testAccounts[i].getDebugLabel()
 		const ctc = testAccounts[i].contract(backend, x)
 		try {
 			// try to stake
-			console.log({
-				beginBlock: b2N(initialState.beginBlock),
-				currentBlock: b2N(present),
-			})
-			// console.log({ safe: ctc.safeApis, unsafe: ctc.apis, error: ctc.apis.Api })
-			// const call = await ctc.safeApis.stake(stake) // we have each make the stake
-			// const response = call[1]apis.stake(stake) // we have each make the stake
-			const response = await ctc.apis.stake(stake)
+			const response = await ctc.apis.stake(stake) // we have each make the stake
 			const { now, result } = response
-			console.log('[*] stake successful', {
+			console.log(`[*] ${testAccount} stake successful`, {
 				assertResultEqualToStake: b2N(result) == stake,
 				stake,
 				result: b2N(result),
 				timeOfStake: parseInt(now),
 			})
+			const local = await ctc.v.local(testAccounts[i])
+			logView(`${testAccount} local`, local)
 		} catch (error) {
-			console.log('[!] failed to stake', { error })
+			console.log(
+				`[!] ${testAccount} attempted to stake but failed with error:`,
+				{ error }
+			)
 		}
 	}
 
+	console.log(
+		'[>] initiating unstake call for test account (before lock is lifted): tAcc4'
+	)
+	;(async () => {
+		const testAccount = testAccounts[3].getDebugLabel()
+		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
+			await testAccounts[3].balancesOf([null, stakeToken])
+		const ctc = testAccounts[3].contract(backend, x)
+		try {
+			// try to unStake
+			const response = await ctc.apis.unstake(stake) // we have tAcc4 attempt to unstake before the lock is lifted
+			const { now, result } = response
+			const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
+				await testAccounts[3].balancesOf([null, stakeToken])
+			const [earnedAlgo, unStakedAmount] = [
+				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
+				b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
+			]
+			console.log(`[*] ${testAccount} unstake call successful`, {
+				toUnSkate: b2N(result),
+				algoBalBefore: fmt(algoBalanceBeforeClaim),
+				stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
+				algoBalAfter: fmt(algoBalanceAfterClaim),
+				stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
+				earnedAlgo: earnedAlgo,
+				unStakedAmount: unStakedAmount,
+				timeOfClaim: b2N(now),
+			})
+		} catch (error) {
+			console.log(
+				`[!] ${testAccount} attempted to unstake but failed with error:`,
+				{ error }
+			)
+		}
+		const local = await ctc.v.local(testAccounts[i])
+		logView(`${testAccount} local`, local)
+	})()
+
+	global = await ctc.v.global()
+	globalState = logView('global', global)
+
+	console.log('[>] initiating claim calls for test accounts except: tAcc4')
 	i = 0
 	present = await reach.getNetworkTime() // update the current network time
 	while (present.lt(initialState.endBlock)) {
@@ -121,6 +206,8 @@ const run1st2tAccs = async (x) => {
 			b2N(initialState.beginBlock) + 90
 		) {
 			for (i; i < len; i++) {
+				if (i === 3) continue // we have the forth test account skip out on claiming rewards
+				const testAccount = testAccounts[i].getDebugLabel()
 				const [algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
 					await testAccounts[i].balancesOf([null, rewardToken])
 				const ctc = testAccounts[i].contract(backend, x)
@@ -140,7 +227,7 @@ const run1st2tAccs = async (x) => {
 						fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
 						b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
 					]
-					console.log('[*] claim call successful', {
+					console.log(`[*] ${testAccount} claim call successful`, {
 						claimedReward: b2N(claimedReward),
 						extraAlgoReward: fmt(extraAlgoReward),
 						algoBalBefore: fmt(algoBalanceBeforeClaim),
@@ -152,8 +239,13 @@ const run1st2tAccs = async (x) => {
 						timeOfClaim: b2N(now),
 					})
 				} catch (error) {
-					console.log('[!] failed to claim', { error })
+					console.log(
+						`[!] ${testAccount} attempted to claim rewards but failed with error:`,
+						{ error }
+					)
 				}
+				const local = await ctc.v.local(testAccounts[i])
+				logView(`${testAccount} local`, local)
 			}
 			i = 0
 			break
@@ -172,8 +264,14 @@ const run1st2tAccs = async (x) => {
 		}
 	}
 
+	global = await ctc.v.global()
+	globalState = logView('global', global)
+
+	console.log('[>] initiating unstake calls for test accounts except: tAcc3')
 	i = 0
 	for (i; i < len; i++) {
+		if (i === 2) continue
+		const testAccount = testAccounts[i].getDebugLabel()
 		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
 			await testAccounts[i].balancesOf([null, stakeToken])
 		const ctc = testAccounts[i].contract(backend, x)
@@ -187,7 +285,7 @@ const run1st2tAccs = async (x) => {
 				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim), // this could return a negative value if the amount of rewards did not offset the gas fees for the API call
 				b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
 			]
-			console.log('[*] unstake call successful', {
+			console.log(`[*] ${testAccount} unstake call successful`, {
 				toUnSkate: b2N(result),
 				algoBalBefore: fmt(algoBalanceBeforeClaim),
 				stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
@@ -198,9 +296,17 @@ const run1st2tAccs = async (x) => {
 				timeOfClaim: b2N(now),
 			})
 		} catch (error) {
-			console.log('[!] failed to unstake', { error })
+			console.log(
+				`[!] ${testAccount} attempted to unstake but failed with error:`,
+				{ error }
+			)
 		}
+		const local = await ctc.v.local(testAccounts[i])
+		logView(`${testAccount} local`, local)
 	}
+
+	global = await ctc.v.global()
+	globalState = logView('global', global)
 }
 
 const logBalances = async () => {
@@ -238,8 +344,9 @@ ctc.p.Creator({
 	deployed: async () => {
 		console.log('[+] creator saw deploy confirmed')
 		const info = await ctc.getInfo()
-		await run1st2tAccs(info)
+		await runtAccs(info)
 		// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
+		console.log('[>] initiating claimFee call for beneficiary')
 		const [
 			algoBalanceBeforeClaim,
 			stakeTokBalanceBeforeClaim,
@@ -281,6 +388,11 @@ ctc.p.Creator({
 		} catch (error) {
 			console.log('[!] admin (beneficiary) failed to claimFees', { error })
 		}
+
+		const local = await ctc.v.local(admin)
+		logView(`${admin.getDebugLabel()} local`, local)
+		const global = await ctc.v.global()
+		const globalState = logView('global', global)
 
 		await logBalances()
 		process.exit(0)
