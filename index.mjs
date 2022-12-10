@@ -148,47 +148,84 @@ const runtAccs = async (x) => {
 			console.log(
 				`[!] ${testAccount} attempted to stake but failed with error:`,
 				{ error }
-			)
+				)
 		}
 	}
 
 	console.log(
-		'[>] initiating unstake call for test account (before lock is lifted): tAcc4'
+		'[>] initiating claim and unstake calls for test account (before lock is lifted): tAcc4'
 	)
-	;(async () => {
-		const testAccount = testAccounts[3].getDebugLabel()
-		const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
+	const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
+		await testAccounts[3].balancesOf([null, stakeToken])
+	const _ctc = testAccounts[3].contract(backend, x)
+	const testAccount = testAccounts[3].getDebugLabel()
+	await reach.wait(30) // this is to confirm if rewards are accumulated during the period of the lockLenghtBlocks
+	try {
+		// try to unStake
+		const response = await _ctc.apis.unstake(stake) // we have tAcc4 attempt to unstake before the lock is lifted
+		const { now, result } = response
+		const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
 			await testAccounts[3].balancesOf([null, stakeToken])
-		const ctc = testAccounts[3].contract(backend, x)
-		try {
-			// try to unStake
-			const response = await ctc.apis.unstake(stake) // we have tAcc4 attempt to unstake before the lock is lifted
-			const { now, result } = response
-			const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
-				await testAccounts[3].balancesOf([null, stakeToken])
-			const [earnedAlgo, unStakedAmount] = [
-				fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-				b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
-			]
-			console.log(`[*] ${testAccount} unstake call successful`, {
-				toUnSkate: b2N(result),
-				algoBalBefore: fmt(algoBalanceBeforeClaim),
-				stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
-				algoBalAfter: fmt(algoBalanceAfterClaim),
-				stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
-				earnedAlgo: earnedAlgo,
-				unStakedAmount: unStakedAmount,
-				timeOfClaim: b2N(now),
-			})
-		} catch (error) {
-			console.log(
-				`[!] ${testAccount} attempted to unstake but failed with error:`,
-				{ error }
-			)
-		}
-		const local = await ctc.v.local(testAccounts[i])
-		logView(`${testAccount} local`, local)
-	})()
+		const [earnedAlgo, unStakedAmount] = [
+			fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
+			b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
+		]
+		console.log(`[*] ${testAccount} unstake call successful`, {
+			toUnSkate: b2N(result),
+			algoBalBefore: fmt(algoBalanceBeforeClaim),
+			stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
+			algoBalAfter: fmt(algoBalanceAfterClaim),
+			stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
+			earnedAlgo: earnedAlgo,
+			unStakedAmount: unStakedAmount,
+			timeOfClaim: b2N(now),
+		})
+	} catch (error) {
+		console.log(
+			`[!] ${testAccount} attempted to unstake but failed with error:`,
+			{ error }
+		)
+	}
+	const _local = await _ctc.v.local(testAccounts[3])
+	logView(`${testAccount} local`, _local)
+
+	// const [_algoBalanceBeforeClaim, rewardTokBalanceBeforeClaim] =
+	// 	await testAccounts[3].balancesOf([null, rewardToken])
+	// try {
+	// 	// try to claim
+	// 	const _response = await _ctc.apis.claim() // we have tAcc4 attempt to claim before the time of the lock is lifted
+	// 	const {
+	// 		_now,
+	// 		result: [
+	// 			claimedReward /* in Aro1914 tokens */,
+	// 			extraAlgoReward /* in Algos */,
+	// 		],
+	// 	} = _response
+	// 	const [_algoBalanceAfterClaim, rewardTokBalanceAfterClaim] =
+	// 		await testAccounts[3].balancesOf([null, rewardToken])
+	// 	const [_earnedAlgo, earnedReward] = [
+	// 		fmt(_algoBalanceAfterClaim) - fmt(_algoBalanceBeforeClaim),
+	// 		b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
+	// 	]
+	// 	console.log(`[*] ${testAccount} claim call successful`, {
+	// 		claimedReward: b2N(claimedReward),
+	// 		extraAlgoReward: fmt(extraAlgoReward),
+	// 		algoBalBefore: fmt(_algoBalanceBeforeClaim),
+	// 		rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
+	// 		algoBalAfter: fmt(_algoBalanceAfterClaim),
+	// 		rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
+	// 		earnedAlgo: _earnedAlgo,
+	// 		earnedReward: earnedReward,
+	// 		timeOfClaim: b2N(_now),
+	// 	})
+	// } catch (error) {
+	// 	console.log(
+	// 		`[!] ${testAccount} attempted to claim rewards but failed with error:`,
+	// 		{ error }
+	// 	)
+	// }
+	// const local = await _ctc.v.local(testAccounts[3])
+	// logView(`${testAccount} local`, local)
 
 	global = await ctc.v.global()
 	globalState = logView('global', global)
