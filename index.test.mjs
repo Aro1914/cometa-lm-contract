@@ -18,7 +18,7 @@ test.one('Users can stake, claim, and unstake', async () => {
 		await setup()
 	const ctc = deploy(creator)
 
-	return ctc.p.Creator({
+	ctc.p.Creator({
 		getParams: async () => await params(admin, stakeToken, rewardToken),
 		deployed: async () => {
 			console.log('[+] creator saw deploy confirmed')
@@ -243,7 +243,7 @@ test.one('Users can stake, claim, and unstake', async () => {
 				if (i === 3)
 					await test.chkErr(
 						testAccounts[i].getDebugLabel(),
-							'tried to unstake more than what is on record',
+						'tried to unstake more than what is on record',
 						async () => {
 							await unstake(i)
 						}
@@ -262,6 +262,16 @@ test.one('Users can stake, claim, and unstake', async () => {
 				stakeToken,
 				rewardToken
 			)
+		},
+	})
+
+	const info = await ctc.getInfo()
+	const ctcUser = user.contract(backend, info)
+	console.log('[+] attached user to the main contract')
+
+	ctcUser.p.User({
+		deployed: () => {
+			console.log('[+] user saw deploy confirmed')
 		},
 	})
 })
