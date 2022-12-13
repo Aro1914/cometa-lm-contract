@@ -145,7 +145,7 @@ export const deploy = (creator) => {
 	return creator.contract(backend)
 }
 
-export const claimFees = async (admin, ctc, stakeToken, rewardToken) => {
+export const claimFees = async (admin, ctc, info, stakeToken, rewardToken) => {
 	// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
 	console.log('[>] initiating claimFee call for beneficiary')
 	const [

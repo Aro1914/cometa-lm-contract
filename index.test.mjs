@@ -255,7 +255,7 @@ test.one('Users can stake, claim, and unstake', async () => {
 
 			global = await ctc.v.global()
 			globalState = logView('global', global)
-			await claimFees(admin, ctc, stakeToken, rewardToken)
+			await claimFees(admin, ctc, info, stakeToken, rewardToken)
 			await logBalances(
 				users,
 				[admin, creator, user, ...testAccounts],
