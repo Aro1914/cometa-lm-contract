@@ -17,8 +17,7 @@ test.one('Users can stake, claim, and unstake', async () => {
 	const { admin, creator, user, testAccounts, stakeToken, rewardToken } =
 		await setup()
 	const ctc = deploy(creator)
-
-	ctc.p.Creator({
+	const creatorPromise = ctc.p.Creator({
 		getParams: async () => await params(admin, stakeToken, rewardToken),
 		deployed: async () => {
 			console.log('[+] creator saw deploy confirmed')
@@ -207,7 +206,6 @@ test.one('Users can stake, claim, and unstake', async () => {
 				const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
 					await testAccounts[i].balancesOf([null, stakeToken])
 				const ctc = testAccounts[i].contract(backend, info)
-				// try {
 				// try to unStake
 				const response = await ctc.apis.unstake(stake)
 				const { now, result } = response
@@ -231,12 +229,6 @@ test.one('Users can stake, claim, and unstake', async () => {
 				// expect(b2N(stakeTokBalanceBeforeClaim)).toBe(880)
 				// expect(b2N(stakeTokBalanceAfterClaim)).toBe(1000)
 				// expect(unStakedAmount).toBe(stake)
-				// } catch (error) {
-				// 	console.log(
-				// 		`[!] ${testAccount} attempted to unstake but failed with error:`,
-				// 		{ error }
-				// 	)
-				// }
 			}
 			for (i; i < len; i++) {
 				if (i === 2) continue
@@ -262,18 +254,20 @@ test.one('Users can stake, claim, and unstake', async () => {
 				stakeToken,
 				rewardToken
 			)
+			return
 		},
 	})
-
 	const info = await ctc.getInfo()
 	const ctcUser = user.contract(backend, info)
 	console.log('[+] attached user to the main contract')
-
-	ctcUser.p.User({
+	const userPromise = ctcUser.p.User({
 		deployed: () => {
 			console.log('[+] user saw deploy confirmed')
+			return
 		},
 	})
+
+	await Promise.all([creatorPromise, userPromise])
 })
 
 await test.run({ noVarOutput: true })
