@@ -117,7 +117,7 @@ const logView = (state, view) => {
  * the forth:
  * stake -> wait (past the endBlock) -> unstake;
  */
-const runtAccs = async (x) => {
+const runtAccts = async (x) => {
 	const initial = await ctc.v.initial()
 	const initialState = logView('initial', initial)
 	let global = await ctc.v.global()
@@ -148,7 +148,7 @@ const runtAccs = async (x) => {
 			console.log(
 				`[!] ${testAccount} attempted to stake but failed with error:`,
 				{ error }
-				)
+			)
 		}
 	}
 
@@ -381,7 +381,7 @@ ctc.p.Creator({
 	deployed: async () => {
 		console.log('[+] creator saw deploy confirmed')
 		const info = await ctc.getInfo()
-		await runtAccs(info)
+		await runtAccts(info)
 		// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
 		console.log('[>] initiating claimFee call for beneficiary')
 		const [
