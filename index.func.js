@@ -117,7 +117,7 @@ export const logView = (state, view) => {
 	}
 }
 
-export const logBalances = async (users, userAccts) => {
+export const logBalances = async (users, userAccts, stakeToken, rewardToken) => {
 	if (userAccts.length !== users.length)
 		throw Error('Arguments passed do not fit')
 	const len = userAccts.length

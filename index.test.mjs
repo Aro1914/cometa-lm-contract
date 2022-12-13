@@ -47,7 +47,12 @@ test.one('Users can stake, claim, and unstake', async () => {
 						result: b2N(result),
 						timeOfStake: parseInt(now),
 					})
-					const balances = await logBalances([testAccount], [testAccounts[i]])
+					const balances = await logBalances(
+						[testAccount],
+						[testAccounts[i]],
+						stakeToken,
+						rewardToken
+					)
 					// expect(balances[testAccount]['Lonewolf1914']).toEqual(880)
 					// expect(balances[testAccount]['Aro1914']).toEqual(0)
 					// expect(b2N(result)).toBe(stake)
@@ -202,42 +207,43 @@ test.one('Users can stake, claim, and unstake', async () => {
 				const [algoBalanceBeforeClaim, stakeTokBalanceBeforeClaim] =
 					await testAccounts[i].balancesOf([null, stakeToken])
 				const ctc = testAccounts[i].contract(backend, info)
-				try {
-					// try to unStake
-					const response = await ctc.apis.unstake(stake)
-					const { now, result } = response
-					const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
-						await testAccounts[i].balancesOf([null, stakeToken])
-					const [earnedAlgo, unStakedAmount] = [
-						fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim), // this could return a negative value if the amount of rewards did not offset the gas fees for the API call
-						b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
-					]
-					console.log(`[*] ${testAccount} unstake call successful`, {
-						toUnSkate: b2N(result),
-						algoBalBefore: fmt(algoBalanceBeforeClaim),
-						stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
-						algoBalAfter: fmt(algoBalanceAfterClaim),
-						stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
-						earnedAlgo: earnedAlgo, // applying stdlib.formatCurrency is simply redundant at this point. If you are reading this diff, know I got slapped in the face for actually doing that
-						unStakedAmount: unStakedAmount, // applying stdlib.formatCurrency here, is, also redundant. Ignore the use of the term 'redundant', believe me you don't want to do that
-						timeOfClaim: b2N(now),
-					})
-					// expect(b2N(result)).toBe(stake)
-					// expect(b2N(stakeTokBalanceBeforeClaim)).toBe(880)
-					// expect(b2N(stakeTokBalanceAfterClaim)).toBe(1000)
-					// expect(unStakedAmount).toBe(stake)
-				} catch (error) {
-					console.log(
-						`[!] ${testAccount} attempted to unstake but failed with error:`,
-						{ error }
-					)
-				}
+				// try {
+				// try to unStake
+				const response = await ctc.apis.unstake(stake)
+				const { now, result } = response
+				const [algoBalanceAfterClaim, stakeTokBalanceAfterClaim] =
+					await testAccounts[i].balancesOf([null, stakeToken])
+				const [earnedAlgo, unStakedAmount] = [
+					fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim), // this could return a negative value if the amount of rewards did not offset the gas fees for the API call
+					b2N(stakeTokBalanceAfterClaim) - b2N(stakeTokBalanceBeforeClaim),
+				]
+				console.log(`[*] ${testAccount} unstake call successful`, {
+					toUnSkate: b2N(result),
+					algoBalBefore: fmt(algoBalanceBeforeClaim),
+					stakeTokenBalBefore: b2N(stakeTokBalanceBeforeClaim),
+					algoBalAfter: fmt(algoBalanceAfterClaim),
+					stakeTokBalAfter: b2N(stakeTokBalanceAfterClaim),
+					earnedAlgo: earnedAlgo, // applying stdlib.formatCurrency is simply redundant at this point. If you are reading this diff, know I got slapped in the face for actually doing that
+					unStakedAmount: unStakedAmount, // applying stdlib.formatCurrency here, is, also redundant. Ignore the use of the term 'redundant', believe me you don't want to do that
+					timeOfClaim: b2N(now),
+				})
+				// expect(b2N(result)).toBe(stake)
+				// expect(b2N(stakeTokBalanceBeforeClaim)).toBe(880)
+				// expect(b2N(stakeTokBalanceAfterClaim)).toBe(1000)
+				// expect(unStakedAmount).toBe(stake)
+				// } catch (error) {
+				// 	console.log(
+				// 		`[!] ${testAccount} attempted to unstake but failed with error:`,
+				// 		{ error }
+				// 	)
+				// }
 			}
 			for (i; i < len; i++) {
 				if (i === 2) continue
 				if (i === 3)
 					await test.chkErr(
-						'tAcc4 tried to unstake more than what is on record',
+						testAccounts[i].getDebugLabel(),
+							'tried to unstake more than what is on record',
 						async () => {
 							await unstake(i)
 						}
@@ -250,7 +256,12 @@ test.one('Users can stake, claim, and unstake', async () => {
 			global = await ctc.v.global()
 			globalState = logView('global', global)
 			await claimFees(admin, ctc, stakeToken, rewardToken)
-			await logBalances(users, [admin, creator, user, ...testAccounts])
+			await logBalances(
+				users,
+				[admin, creator, user, ...testAccounts],
+				stakeToken,
+				rewardToken
+			)
 		},
 	})
 })
