@@ -1,0 +1,342 @@
+
+> @reach-sh/cometa-clone@1.0.0 index
+> node --experimental-modules --unhandled-rejections=strict index.test.mjs
+
+1 jobs scheduled, running...
+Spawning 1 of 1 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] test accounts created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 1,000 Lonewolf1914 to each test account
+[+] transferred 2,000,000 Aro1914 to creator
+[+] attached user to the main contract
+[+] creator saw deploy confirmed
+[*] current initial view {
+  beginBlock: 126,
+  creationFee: 10,
+  endBlock: 226,
+  flatAlgoCreationFee: 100000000,
+  lockLengthBlocks: 50,
+  rewardToken: 34,
+  stakeToken: 35,
+  totalAlgoRewardAmount: 1000000000000,
+  totalRewardAmount: 1000000
+}
+[*] current global view { lastUpdateBlock: 126, rewardPerTokenStored: 0, totalStaked: 0 }
+[>] initiating stake calls for test accounts except: tAcc3
+[*] tAcc1 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 126
+}
+Current account balances
+[*] tAcc1 { Algo: '99.994', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc1 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc1 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc1 stake result == stake'[39m }
+[*] current tAcc1 local view { lockTimestamp: 126, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[*] tAcc2 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 126
+}
+Current account balances
+[*] tAcc2 { Algo: '99.994', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc2 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc2 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc2 stake result == stake'[39m }
+[*] current tAcc2 local view { lockTimestamp: 126, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[*] tAcc4 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 126
+}
+Current account balances
+[*] tAcc4 { Algo: '99.9941', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc4 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc4 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc4 stake result == stake'[39m }
+[*] current tAcc4 local view { lockTimestamp: 126, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[>] initiating claim and unstake calls for test account (before lock is lifted): tAcc4
+[+] user saw deploy confirmed
+[*] tAcc4 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '99.9941',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '99.9935',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: -0.0006000000000057071,
+  unStakedAmount: 120,
+  timeOfClaim: 1077
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 226,
+  reward: 333333,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 226,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 240
+}
+[>] initiating claim calls for test accounts except: tAcc4
+[-] blocksRemaining 127 beginBlock: 126 endBlock: 226 present: 90
+[-] blocksRemaining 117 beginBlock: 126 endBlock: 226 present: 100
+[-] blocksRemaining 107 beginBlock: 126 endBlock: 226 present: 110
+[-] blocksRemaining 97 beginBlock: 126 endBlock: 226 present: 120
+[-] blocksRemaining 87 beginBlock: 126 endBlock: 226 present: 130
+[-] blocksRemaining 77 beginBlock: 126 endBlock: 226 present: 140
+[-] blocksRemaining 67 beginBlock: 126 endBlock: 226 present: 150
+[-] blocksRemaining 57 beginBlock: 126 endBlock: 226 present: 160
+[-] blocksRemaining 47 beginBlock: 126 endBlock: 226 present: 170
+[-] blocksRemaining 37 beginBlock: 126 endBlock: 226 present: 180
+[-] blocksRemaining 27 beginBlock: 126 endBlock: 226 present: 190
+[-] blocksRemaining 17 beginBlock: 126 endBlock: 226 present: 200
+[-] blocksRemaining 7 beginBlock: 126 endBlock: 226 present: 210
+[*] tAcc1 claim call successful {
+  claimedReward: 333333,
+  extraAlgoReward: '333333',
+  algoBalBefore: '100.0066',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '333433.0026',
+  rewardTokBalAfter: 333333,
+  earnedAlgo: 333332.996,
+  earnedReward: 333333,
+  timeOfClaim: 5157
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim < algoBalanceAfterClaim'[39m
+}
+[*] current tAcc1 local view {
+  lockTimestamp: 226,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 120
+}
+[*] tAcc2 claim call successful {
+  claimedReward: 333333,
+  extraAlgoReward: '333333',
+  algoBalBefore: '100.0066',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '333433.0026',
+  rewardTokBalAfter: 333333,
+  earnedAlgo: 333332.996,
+  earnedReward: 333333,
+  timeOfClaim: 5158
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim < algoBalanceAfterClaim'[39m
+}
+[*] current tAcc2 local view {
+  lockTimestamp: 226,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 120
+}
+[*] tAcc3 claim call successful {
+  claimedReward: 0,
+  extraAlgoReward: '0',
+  algoBalBefore: '100.0106',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '100.0056',
+  rewardTokBalAfter: 0,
+  earnedAlgo: -0.0049999999999954525,
+  earnedReward: 0,
+  timeOfClaim: 5160
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim > algoBalanceAfterClaim'[39m
+}
+[*] current tAcc3 local view {
+  lockTimestamp: 226,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 226,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 240
+}
+[>] initiating unstake calls for test accounts except: tAcc3
+[*] tAcc1 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '333433.0026',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '333433.3331',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: 0.3304999999818392,
+  unStakedAmount: 120,
+  timeOfClaim: 5161
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 226,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] tAcc2 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '333433.3361',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '333433.3331',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: -0.003000000026077032,
+  unStakedAmount: 120,
+  timeOfClaim: 5162
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 226,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: unstake errored with Error: Assertion failed: unstake: tried to unstake more than staked on record
+    at reach standard library:57:5:application
+    at ./index.rsh:427:14:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:424:38:application call to [unknown function] (defined at: ./index.rsh:424:38:function exp)
+    at ./index.rsh:297:19:application call to "rununstake0_477" (defined at: ./index.rsh:424:12:function exp)
+    at ./index.rsh:297:19:application call to [unknown function] (defined at: ./index.rsh:297:19:function exp)
+      at /stdlib/dist/cjs/shared_impl.js:342:34
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m,
+  es: [32m'Error: unstake errored with Error: Assertion failed: unstake: tried to unstake more than staked on record\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:427:14:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:424:38:application call to [unknown function] (defined at: ./index.rsh:424:38:function exp)\n'[39m +
+    [32m'  at ./index.rsh:297:19:application call to "rununstake0_477" (defined at: ./index.rsh:424:12:function exp)\n'[39m +
+    [32m'  at ./index.rsh:297:19:application call to [unknown function] (defined at: ./index.rsh:297:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'tried to unstake more than staked on record'[39m,
+  id: [32m'tAcc4'[39m
+}
+[*] current tAcc4 local view {
+  lockTimestamp: 226,
+  reward: 333333,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 226,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+[>] initiating claimFee call for beneficiary
+[+] attached admin (beneficiary) to the main contract
+[*] admin (beneficiary) claimFees call successful {
+  claimedReward: 1000,
+  extraAlgoReward: '1100',
+  algoBalBefore: '100.0057',
+  rewardTokenBalBefore: 998000000,
+  stakeTokBalanceBefore: 999996000,
+  algoBalAfter: '1200.0017',
+  rewardTokBalAfter: 998001000,
+  stakeTokBalanceAfter: 999996000,
+  earnedAlgo: 1099.996,
+  earnedReward: 1000,
+  timeOfClaim: 5164
+}
+[*] current admin local view { lockTimestamp: 0, reward: 0, rewardPerTokenPaid: 0, staked: 0 }
+[*] current global view {
+  lastUpdateBlock: 226,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+SUCC {
+  actual: [33m333333[39m,
+  expected: [33m333333[39m,
+  id: [32m'tAcc4 rewards value after unstaking == rewards retained after beneficiary claimFees'[39m
+}
+Current account balances
+[*] admin { Algo: '1200.0017', Aro1914: 998001000, Lonewolf1914: 999996000 }
+Current account balances
+[*] creator { Algo: '999029.4453', Aro1914: 999000, Lonewolf1914: 0 }
+Current account balances
+[*] user { Algo: '100.0129', Aro1914: 0, Lonewolf1914: 0 }
+Current account balances
+[*] tAcc1 { Algo: '333433.3331', Aro1914: 333333, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc2 { Algo: '333433.3331', Aro1914: 333333, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc3 { Algo: '100.0057', Aro1914: 0, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc4 { Algo: '100.0037', Aro1914: 0, Lonewolf1914: 1000 }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc1 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33mtrue[39m, expected: [33mtrue[39m, id: [32m'tAcc1 has some Aro1914 rewards'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc2 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33mtrue[39m, expected: [33mtrue[39m, id: [32m'tAcc2 has some Aro1914 rewards'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc3 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc3 has no Aro1914 reward'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc4 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc4 has no Aro1914 reward'[39m }
+[*] current global view {
+  lastUpdateBlock: 226,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Users can stake, claim, and unstake'[39m,
+  time: [33m178.614[39m
+}
+Done running

@@ -26,7 +26,6 @@ const testAccounts = await reach.newTestAccounts(4, startingBalance)
 testAccounts.forEach((acc, i) => {
 	acc.setDebugLabel(`tAcc${i + 1}`)
 })
-
 console.log('[+] test accounts created')
 
 const opts = {
@@ -65,7 +64,7 @@ const params = {
 	beneficiary: admin.getAddress(),
 	creationFee: 10, // 0.1%,
 	// 1. attracts a 1,000 Algo creationAlgoFeeToPay from the totalAlgoRewardAmount of 1,000,000 Algos
-	// 2. attracts a 10,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 10,000,000 Aro1914s
+	// 2. attracts a 1,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 1,000,000 Aro1914s
 	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
 	stakeToken,
 	rewardToken,

@@ -1,8 +1,6 @@
-import { loadStdlib, test } from '@reach-sh/stdlib'
+import { test } from '@reach-sh/stdlib'
+import { reach, fmt, b2N, logView, logBalances, tAcc } from './index.func.0.js'
 import * as backend from './build/index.main.mjs'
-export const reach = loadStdlib()
-export const fmt = (x) => reach.formatCurrency(x, 4)
-export const b2N = (x) => reach.bigNumberToNumber(x)
 
 export const setup = async () => {
 	const adminStartingBalance = reach.parseCurrency(100)
@@ -25,6 +23,7 @@ export const setup = async () => {
 	testAccounts.forEach((acc, i) => {
 		acc.setDebugLabel(`tAcc${i + 1}`)
 	})
+	console.log('[+] test accounts created')
 
 	const opts = {
 		decimals: 6,
@@ -74,7 +73,7 @@ export const params = async (admin, stakeToken, rewardToken) => ({
 	beneficiary: admin.getAddress(),
 	creationFee: 10, // 0.1%,
 	// 1. attracts a 1,000 Algo creationAlgoFeeToPay from the totalAlgoRewardAmount of 1,000,000 Algos
-	// 2. attracts a 10,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 10,000,000 Aro1914s
+	// 2. attracts a 1,000 Aro1914 creationRewardFeeToPay from the totalRewardAmount of 1,000,000 Aro1914s
 	flatAlgoCreationFee: reach.parseCurrency(100), // 100 Algos
 	stakeToken,
 	rewardToken,
@@ -85,121 +84,6 @@ export const params = async (admin, stakeToken, rewardToken) => ({
 	lockLengthBlocks: 50, // 1. 50 farm blocks from the point of staking, this leaves a window of 50 blocks for the staked tokens to attract claimable rewards,
 	// after which users can then decide to un-stake their stake tokens
 })
-
-/**
- * This logs to the console the formatted values of a view
- */
-export const logView = (state, view) => {
-	if (view[1] == null) console.log('[!] view is not set')
-	else {
-		const values = {}
-		const keys = Object.keys(view[1])
-		const len = keys.length
-		let i = 0
-		for (i; i < len; i++) {
-			const key = keys[i]
-			let value = view[1][key]
-			if (reach.isBigNumber(value))
-				try {
-					value = b2N(value)
-					values[key] = value
-				} catch (error) {
-					if (error.reason == 'overflow') {
-						value = fmt(value)
-						values[key + ' (fmt)'] = value
-					} else {
-						console.log({ error })
-					}
-				}
-		}
-		console.log(`[*] current ${state} view`, values)
-		return values
-	}
-}
-
-export const logBalances = async (
-	users,
-	userAccts,
-	stakeToken,
-	rewardToken
-) => {
-	if (userAccts.length !== users.length)
-		throw Error('Arguments passed do not fit')
-	const len = userAccts.length
-	let i = 0
-	const accounts = {}
-	for (i; i < len; i++) {
-		const [
-			algoBalanceBeforeClaim,
-			stakeTokBalanceBeforeClaim,
-			rewardTokBalanceBeforeClaim,
-		] = await userAccts[i].balancesOf([null, stakeToken, rewardToken])
-		console.log('Current account balances')
-		accounts[users[i]] = {
-			Algo: fmt(algoBalanceBeforeClaim),
-			Aro1914: b2N(rewardTokBalanceBeforeClaim),
-			Lonewolf1914: b2N(stakeTokBalanceBeforeClaim),
-		}
-		console.log('[*] ' + users[i], accounts[users[i]])
-	}
-
-	return accounts
-}
-
-export const deploy = (creator) => {
-	return creator.contract(backend)
-}
-
-export const claimFees = async (admin, ctc, info, stakeToken, rewardToken) => {
-	// by this time it should be past the endBlock, so we make the beneficiary claimFees that may have been lost
-	console.log('[>] initiating claimFee call for beneficiary')
-	const [
-		algoBalanceBeforeClaim,
-		stakeTokBalanceBeforeClaim,
-		rewardTokBalanceBeforeClaim,
-	] = await admin.balancesOf([null, stakeToken, rewardToken])
-	try {
-		const ctcAdmin = admin.contract(backend, info)
-		console.log('[+] attached admin (beneficiary) to the main contract')
-		const response = await ctcAdmin.apis.claimFees()
-		const {
-			now,
-			result: [
-				claimedReward /* in Aro1914 tokens */,
-				extraAlgoReward /* in Algos */,
-			],
-		} = response
-		const [
-			algoBalanceAfterClaim,
-			stakeTokBalanceAfterClaim,
-			rewardTokBalanceAfterClaim,
-		] = await admin.balancesOf([null, stakeToken, rewardToken])
-		const [earnedAlgo, earnedReward] = [
-			fmt(algoBalanceAfterClaim) - fmt(algoBalanceBeforeClaim),
-			b2N(rewardTokBalanceAfterClaim) - b2N(rewardTokBalanceBeforeClaim),
-		]
-		console.log('[*] admin (beneficiary) claimFees call successful', {
-			claimedReward: b2N(claimedReward),
-			extraAlgoReward: fmt(extraAlgoReward),
-			algoBalBefore: fmt(algoBalanceBeforeClaim),
-			rewardTokenBalBefore: b2N(rewardTokBalanceBeforeClaim),
-			stakeTokBalanceBefore: b2N(stakeTokBalanceBeforeClaim),
-			algoBalAfter: fmt(algoBalanceAfterClaim),
-			rewardTokBalAfter: b2N(rewardTokBalanceAfterClaim),
-			stakeTokBalanceAfter: b2N(stakeTokBalanceAfterClaim),
-			earnedAlgo: earnedAlgo,
-			earnedReward: earnedReward,
-			timeOfClaim: b2N(now),
-		})
-	} catch (error) {
-		console.log('[!] admin (beneficiary) failed to claimFees', { error })
-	}
-
-	const local = await ctc.v.local(admin)
-	logView(`${admin.getDebugLabel()} local`, local)
-	const global = await ctc.v.global()
-	const globalState = logView('global', global)
-}
 
 export const runAccts = async (
 	ctc,
@@ -239,13 +123,21 @@ export const runAccts = async (
 				stakeToken,
 				rewardToken
 			)
-			// expect(balances[testAccount]['Lonewolf1914']).toEqual(880)
-			// expect(balances[testAccount]['Aro1914']).toEqual(0)
-			// expect(b2N(result)).toBe(stake)
+			test.chk(
+				`${testAccount} Lonewolf1914 balance == 880`,
+				balances[testAccount]['Lonewolf1914'],
+				880
+			)
+			test.chk(
+				`${testAccount} Aro1914 balance == 0`,
+				balances[testAccount]['Aro1914'],
+				0
+			)
+			test.chk(`${testAccount} stake result == stake`, b2N(result), stake)
 
 			const local = await ctc.v.local(testAccounts[i])
 			const values = logView(`${testAccount} local`, local)
-			// expect(values['staked']).toBe(stake)
+			test.chk('returned stake value == stake', values['staked'], stake)
 		} catch (error) {
 			console.log(
 				`[!] ${testAccount} attempted to stake but failed with error:`,
@@ -282,10 +174,18 @@ export const runAccts = async (
 			unStakedAmount: unStakedAmount,
 			timeOfClaim: b2N(now),
 		})
-		// expect(b2N(result)).toBe(stake)
-		// expect(b2N(stakeTokBalanceBeforeClaim)).toBe(880)
-		// expect(b2N(stakeTokBalanceAfterClaim)).toBe(1000)
-		// expect(unStakedAmount).toBe(stake)
+		test.chk('result == stake', b2N(result), stake)
+		test.chk(
+			'stakeTokBalanceBeforeClaim == 880',
+			b2N(stakeTokBalanceBeforeClaim),
+			880
+		)
+		test.chk(
+			'stakeTokBalanceAfterClaim == 1000',
+			b2N(stakeTokBalanceAfterClaim),
+			1000
+		)
+		test.chk('unStakedAmount == stake', unStakedAmount, stake)
 	} catch (error) {
 		console.log(
 			`[!] ${testAccount} attempted to unstake but failed with error:`,
@@ -293,7 +193,7 @@ export const runAccts = async (
 		)
 	}
 	const _local = await _ctc.v.local(testAccounts[3])
-	logView(`${testAccount} local`, _local)
+	const tAcc4LV = logView(`${testAccount} local`, _local)
 
 	global = await ctc.v.global()
 	globalState = logView('global', global)
@@ -349,9 +249,24 @@ export const runAccts = async (
 					// 	b2N(rewardTokBalanceBeforeClaim) <
 					// 		b2N(rewardTokBalanceAfterClaim)
 					// ).toBeTruthy()
-					// expect(
-					// 	fmt(algoBalanceBeforeClaim) < fmt(algoBalanceAfterClaim)
-					// ).toBe(stake)
+					if (i === 2)
+						// this is because tAcc3 never made a stake,
+						// so the attempt to claim rewards should only result in a reduction of Algo,
+						// as the attempt would only end up costing wasted fees
+						test.chk(
+							'algoBalanceBeforeClaim > algoBalanceAfterClaim',
+							fmt(algoBalanceBeforeClaim) > fmt(algoBalanceAfterClaim),
+							true
+						)
+					// but for the other two accounts, tAcc1 & tAcc2, that staked,
+					// their calls should result in an increase in their Algo balance,
+					// as a result of the claimed rewards
+					else
+						test.chk(
+							'algoBalanceBeforeClaim < algoBalanceAfterClaim',
+							fmt(algoBalanceBeforeClaim) < fmt(algoBalanceAfterClaim),
+							true
+						)
 				} catch (error) {
 					console.log(
 						`[!] ${testAccount} attempted to claim rewards but failed with error:`,
@@ -407,10 +322,18 @@ export const runAccts = async (
 			unStakedAmount: unStakedAmount, // applying stdlib.formatCurrency here, is, also redundant. Ignore the use of the term 'redundant', believe me you don't want to do that
 			timeOfClaim: b2N(now),
 		})
-		// expect(b2N(result)).toBe(stake)
-		// expect(b2N(stakeTokBalanceBeforeClaim)).toBe(880)
-		// expect(b2N(stakeTokBalanceAfterClaim)).toBe(1000)
-		// expect(unStakedAmount).toBe(stake)
+		test.chk('result == stake', b2N(result), stake)
+		test.chk(
+			'stakeTokBalanceBeforeClaim == 880',
+			b2N(stakeTokBalanceBeforeClaim),
+			880
+		)
+		test.chk(
+			'stakeTokBalanceAfterClaim == 1000',
+			b2N(stakeTokBalanceAfterClaim),
+			1000
+		)
+		test.chk('unStakedAmount == stake', unStakedAmount, stake)
 	}
 	for (i; i < len; i++) {
 		if (i === 2) continue
@@ -429,4 +352,45 @@ export const runAccts = async (
 
 	global = await ctc.v.global()
 	globalState = logView('global', global)
+	return tAcc4LV
+}
+
+export const confirmBalances = (testAccounts, balances) => {
+	let i = 0
+	for (i; i < 2; i++) {
+		const testAccount = tAcc(testAccounts, i)
+		test.chk(
+			`${testAccount} Lonewolf1914 balance == 1000`,
+			balances[testAccount]['Lonewolf1914'],
+			1000
+		)
+		test.chk(
+			`${testAccount} has some Aro1914 rewards`,
+			balances[testAccount]['Aro1914'] > 0,
+			true
+		)
+	}
+	let testAccount = tAcc(testAccounts, i)
+	test.chk(
+		`${testAccount} Lonewolf1914 balance == 1000`,
+		balances[testAccount]['Lonewolf1914'],
+		1000
+	)
+	test.chk(
+		`${testAccount} has no Aro1914 reward`,
+		balances[testAccount]['Aro1914'],
+		0
+	)
+	i++
+	testAccount = tAcc(testAccounts, i)
+	test.chk(
+		`${testAccount} Lonewolf1914 balance == 1000`,
+		balances[testAccount]['Lonewolf1914'],
+		1000
+	)
+	test.chk(
+		`${testAccount} has no Aro1914 reward`,
+		balances[testAccount]['Aro1914'],
+		0
+	)
 }
