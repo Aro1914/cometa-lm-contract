@@ -1,0 +1,332 @@
+
+> @reach-sh/cometa-clone@1.0.0 index
+> node --experimental-modules --unhandled-rejections=strict index.test.mjs
+
+10 jobs scheduled, running...
+Spawning 1 of 10 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO
+    at reach standard library:57:5:application
+    at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:282:10)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:81:4,
+  es: [32m'Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Flat ALGO creation fee cannot be more than 1000 ALGO'[39m,
+  id: [32m'Params with flatAlgoCreationFee of 1001 throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Flat ALGO creation fee cannot be more than 1000 ALGO'[39m,
+  time: [33m4.224[39m
+}
+Spawning 1 of 9 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Reach requires all tokens to be different. Consider using distribution contract instead.
+    at reach standard library:57:5:application
+    at ./index.rsh:133:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:267:10)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:104:5,
+  es: [32m'Error: Assertion failed: Creator: Reach requires all tokens to be different. Consider using distribution contract instead.\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:133:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Reach requires all tokens to be different. Consider using distribution contract instead.'[39m,
+  id: [32m'Params with the same tokenID for reward and stakeToken throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Reach requires all tokens to be different. Consider using distribution contract instead.'[39m,
+  time: [33m1.52[39m
+}
+Spawning 1 of 8 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Maximum possible creation fee is 20%
+    at reach standard library:57:5:application
+    at ./index.rsh:138:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:275:10)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:125:4,
+  es: [32m'Error: Assertion failed: Creator: Maximum possible creation fee is 20%\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:138:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Maximum possible creation fee is 20%'[39m,
+  id: [32m'Params with a creation fee greater than 20% throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Maximum possible creation fee is 20%'[39m,
+  time: [33m0.983[39m
+}
+Spawning 1 of 7 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:145:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:289:10)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:146:4,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:145:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a begin block greater than the end block throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'End block must be greater than begin block'[39m,
+  time: [33m1.242[39m
+}
+Spawning 1 of 6 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:297:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:169:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a difference between the end block and the begin block greater than 10000000 blocks throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'End block minus begin block must be less than 10000000 blocks'[39m,
+  time: [33m4.063[39m
+}
+Spawning 1 of 5 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:297:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:193:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a lockLenghtBlocks greater than 10000000 blocks throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'lockLenghtBlocks block must be less than 10000000 blocks'[39m,
+  time: [33m0.907[39m
+}
+Spawning 1 of 4 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:150:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:311:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:217:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:150:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a lockLenghtBlocks > end block - begin block throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'lockLenghtBlocks block must be <= end block - begin block'[39m,
+  time: [33m0.4[39m
+}
+Spawning 1 of 3 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:155:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:318:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:239:4,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:155:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a totalRewardAmount <= 0 throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'totalRewardAmount must be > 0'[39m,
+  time: [33m0.793[39m
+}
+Spawning 1 of 2 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO
+    at reach standard library:57:5:application
+    at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:282:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:260:4,
+  es: [32m'Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a flatAlgoCreationFee > 1000 Algo throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'flatAlgoCreationFee must be <= 1000 Algo'[39m,
+  time: [33m4.529[39m
+}
+Spawning 1 of 1 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+[+] attached user to the main contract
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Only the beneficiary address is allowed to claimFees'[39m,
+  time: [33m1.449[39m
+}
+Done running

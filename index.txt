@@ -1,0 +1,673 @@
+
+> @reach-sh/cometa-clone@1.0.0 index
+> node --experimental-modules --unhandled-rejections=strict index.test.mjs
+
+11 jobs scheduled, running...
+Spawning 1 of 11 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] test accounts created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 1,000 Lonewolf1914 to each test account
+[+] transferred 2,000,000 Aro1914 to creator
+[+] attached user to the main contract
+[+] creator saw deploy confirmed
+[*] current initial view {
+  beginBlock: 102,
+  creationFee: 10,
+  endBlock: 202,
+  flatAlgoCreationFee: 100000000,
+  lockLengthBlocks: 50,
+  rewardToken: 9,
+  stakeToken: 10,
+  totalAlgoRewardAmount: 1000000000000,
+  totalRewardAmount: 1000000
+}
+[*] current global view { lastUpdateBlock: 102, rewardPerTokenStored: 0, totalStaked: 0 }
+[>] initiating stake calls for test accounts except: tAcc3
+[*] tAcc1 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 102
+}
+Current account balances
+[*] tAcc1 { Algo: '99.994', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc1 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc1 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc1 stake result == stake'[39m }
+[*] current tAcc1 local view { lockTimestamp: 102, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[*] tAcc2 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 102
+}
+Current account balances
+[*] tAcc2 { Algo: '99.994', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc2 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc2 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc2 stake result == stake'[39m }
+[*] current tAcc2 local view { lockTimestamp: 102, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[*] tAcc4 stake successful {
+  assertResultEqualToStake: true,
+  stake: 120,
+  result: 120,
+  timeOfStake: 102
+}
+Current account balances
+[*] tAcc4 { Algo: '99.994', Aro1914: 0, Lonewolf1914: 880 }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'tAcc4 Lonewolf1914 balance == 880'[39m }
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc4 Aro1914 balance == 0'[39m }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'tAcc4 stake result == stake'[39m }
+[*] current tAcc4 local view { lockTimestamp: 102, reward: 0, rewardPerTokenPaid: 0, staked: 120 }
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'returned stake value == stake'[39m }
+[>] initiating claim and unstake calls for test account (before lock is lifted): tAcc4
+[+] user saw deploy confirmed
+[*] tAcc4 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '99.994',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '99.994',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: 0,
+  unStakedAmount: 120,
+  timeOfClaim: 1278
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 202,
+  reward: 333333,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 202,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 240
+}
+[>] initiating claim calls for test accounts except: tAcc4
+[-] blocksRemaining 133 beginBlock: 102 endBlock: 202 present: 60
+[-] blocksRemaining 123 beginBlock: 102 endBlock: 202 present: 70
+[-] blocksRemaining 113 beginBlock: 102 endBlock: 202 present: 80
+[-] blocksRemaining 103 beginBlock: 102 endBlock: 202 present: 90
+[-] blocksRemaining 93 beginBlock: 102 endBlock: 202 present: 100
+[-] blocksRemaining 83 beginBlock: 102 endBlock: 202 present: 110
+[-] blocksRemaining 73 beginBlock: 102 endBlock: 202 present: 120
+[-] blocksRemaining 63 beginBlock: 102 endBlock: 202 present: 130
+[-] blocksRemaining 53 beginBlock: 102 endBlock: 202 present: 140
+[-] blocksRemaining 43 beginBlock: 102 endBlock: 202 present: 150
+[-] blocksRemaining 33 beginBlock: 102 endBlock: 202 present: 160
+[-] blocksRemaining 23 beginBlock: 102 endBlock: 202 present: 170
+[-] blocksRemaining 13 beginBlock: 102 endBlock: 202 present: 180
+[-] blocksRemaining 3 beginBlock: 102 endBlock: 202 present: 190
+[*] tAcc1 claim call successful {
+  claimedReward: 333333,
+  extraAlgoReward: '333333',
+  algoBalBefore: '100.0092',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '333433.0052',
+  rewardTokBalAfter: 333333,
+  earnedAlgo: 333332.99600000004,
+  earnedReward: 333333,
+  timeOfClaim: 6170
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim < algoBalanceAfterClaim'[39m
+}
+[*] current tAcc1 local view {
+  lockTimestamp: 202,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 120
+}
+[*] tAcc2 claim call successful {
+  claimedReward: 333333,
+  extraAlgoReward: '333333',
+  algoBalBefore: '100.0092',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '333433.0052',
+  rewardTokBalAfter: 333333,
+  earnedAlgo: 333332.99600000004,
+  earnedReward: 333333,
+  timeOfClaim: 6171
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim < algoBalanceAfterClaim'[39m
+}
+[*] current tAcc2 local view {
+  lockTimestamp: 202,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 120
+}
+[*] tAcc3 claim call successful {
+  claimedReward: 0,
+  extraAlgoReward: '0',
+  algoBalBefore: '100.0132',
+  rewardTokenBalBefore: 0,
+  algoBalAfter: '100.0082',
+  rewardTokBalAfter: 0,
+  earnedAlgo: -0.0049999999999954525,
+  earnedReward: 0,
+  timeOfClaim: 6173
+}
+SUCC {
+  actual: [33mtrue[39m,
+  expected: [33mtrue[39m,
+  id: [32m'algoBalanceBeforeClaim > algoBalanceAfterClaim'[39m
+}
+[*] current tAcc3 local view {
+  lockTimestamp: 202,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 202,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 240
+}
+[>] initiating unstake calls for test accounts except: tAcc3
+[*] tAcc1 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '333433.0052',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '333433.0022',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: -0.003000000026077032,
+  unStakedAmount: 120,
+  timeOfClaim: 6174
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 202,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] tAcc2 unstake call successful {
+  toUnSkate: 120,
+  algoBalBefore: '333433.0052',
+  stakeTokenBalBefore: 880,
+  algoBalAfter: '333433.0022',
+  stakeTokBalAfter: 1000,
+  earnedAlgo: -0.003000000026077032,
+  unStakedAmount: 120,
+  timeOfClaim: 6175
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'result == stake'[39m }
+SUCC { actual: [33m880[39m, expected: [33m880[39m, id: [32m'stakeTokBalanceBeforeClaim == 880'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'stakeTokBalanceAfterClaim == 1000'[39m
+}
+SUCC { actual: [33m120[39m, expected: [33m120[39m, id: [32m'unStakedAmount == stake'[39m }
+[*] current tAcc4 local view {
+  lockTimestamp: 202,
+  reward: 0,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: unstake errored with Error: Assertion failed: unstake: tried to unstake more than staked on record
+    at reach standard library:57:5:application
+    at ./index.rsh:427:14:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:424:38:application call to [unknown function] (defined at: ./index.rsh:424:38:function exp)
+    at ./index.rsh:297:19:application call to "rununstake0_477" (defined at: ./index.rsh:424:12:function exp)
+    at ./index.rsh:297:19:application call to [unknown function] (defined at: ./index.rsh:297:19:function exp)
+      at /stdlib/dist/cjs/shared_impl.js:342:34
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m,
+  es: [32m'Error: unstake errored with Error: Assertion failed: unstake: tried to unstake more than staked on record\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:427:14:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:424:38:application call to [unknown function] (defined at: ./index.rsh:424:38:function exp)\n'[39m +
+    [32m'  at ./index.rsh:297:19:application call to "rununstake0_477" (defined at: ./index.rsh:424:12:function exp)\n'[39m +
+    [32m'  at ./index.rsh:297:19:application call to [unknown function] (defined at: ./index.rsh:297:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'tried to unstake more than staked on record'[39m,
+  id: [32m'tAcc4'[39m
+}
+[*] current tAcc4 local view {
+  lockTimestamp: 202,
+  reward: 333333,
+  'rewardPerTokenPaid (fmt)': '2777777777777777.7777',
+  staked: 0
+}
+[*] current global view {
+  lastUpdateBlock: 202,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+[>] initiating claimFee call for beneficiary
+[+] attached admin (beneficiary) to the main contract
+[*] admin (beneficiary) claimFees call successful {
+  claimedReward: 1000,
+  extraAlgoReward: '1100',
+  algoBalBefore: '100.0082',
+  rewardTokenBalBefore: 998000000,
+  stakeTokBalanceBefore: 999996000,
+  algoBalAfter: '1200.0042',
+  rewardTokBalAfter: 998001000,
+  stakeTokBalanceAfter: 999996000,
+  earnedAlgo: 1099.996,
+  earnedReward: 1000,
+  timeOfClaim: 6177
+}
+[*] current admin local view { lockTimestamp: 0, reward: 0, rewardPerTokenPaid: 0, staked: 0 }
+[*] current global view {
+  lastUpdateBlock: 202,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+SUCC {
+  actual: [33m333333[39m,
+  expected: [33m333333[39m,
+  id: [32m'tAcc4 rewards value after unstaking == rewards retained after beneficiary claimFees'[39m
+}
+Current account balances
+[*] admin { Algo: '1200.0042', Aro1914: 998001000, Lonewolf1914: 999996000 }
+Current account balances
+[*] creator { Algo: '999053.4164', Aro1914: 999000, Lonewolf1914: 0 }
+Current account balances
+[*] user { Algo: '100.0154', Aro1914: 0, Lonewolf1914: 0 }
+Current account balances
+[*] tAcc1 { Algo: '333433.0022', Aro1914: 333333, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc2 { Algo: '333433.0022', Aro1914: 333333, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc3 { Algo: '100.0082', Aro1914: 0, Lonewolf1914: 1000 }
+Current account balances
+[*] tAcc4 { Algo: '100.0062', Aro1914: 0, Lonewolf1914: 1000 }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc1 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33mtrue[39m, expected: [33mtrue[39m, id: [32m'tAcc1 has some Aro1914 rewards'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc2 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33mtrue[39m, expected: [33mtrue[39m, id: [32m'tAcc2 has some Aro1914 rewards'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc3 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc3 has no Aro1914 reward'[39m }
+SUCC {
+  actual: [33m1000[39m,
+  expected: [33m1000[39m,
+  id: [32m'tAcc4 Lonewolf1914 balance == 1000'[39m
+}
+SUCC { actual: [33m0[39m, expected: [33m0[39m, id: [32m'tAcc4 has no Aro1914 reward'[39m }
+[*] current global view {
+  lastUpdateBlock: 202,
+  'rewardPerTokenStored (fmt)': '2777777777777777.7777',
+  totalStaked: 0
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Users can stake, claim, and unstake'[39m,
+  time: [33m287.433[39m
+}
+Spawning 1 of 10 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO
+    at reach standard library:57:5:application
+    at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:282:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:81:4,
+  es: [32m'Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Flat ALGO creation fee cannot be more than 1000 ALGO'[39m,
+  id: [32m'Params with flatAlgoCreationFee of 1001 throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Flat ALGO creation fee cannot be more than 1000 ALGO'[39m,
+  time: [33m0.597[39m
+}
+Spawning 1 of 9 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Reach requires all tokens to be different. Consider using distribution contract instead.
+    at reach standard library:57:5:application
+    at ./index.rsh:133:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:267:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:104:5,
+  es: [32m'Error: Assertion failed: Creator: Reach requires all tokens to be different. Consider using distribution contract instead.\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:133:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Reach requires all tokens to be different. Consider using distribution contract instead.'[39m,
+  id: [32m'Params with the same tokenID for reward and stakeToken throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Reach requires all tokens to be different. Consider using distribution contract instead.'[39m,
+  time: [33m0.97[39m
+}
+Spawning 1 of 8 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Maximum possible creation fee is 20%
+    at reach standard library:57:5:application
+    at ./index.rsh:138:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:275:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:125:4,
+  es: [32m'Error: Assertion failed: Creator: Maximum possible creation fee is 20%\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:138:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m'Maximum possible creation fee is 20%'[39m,
+  id: [32m'Params with a creation fee greater than 20% throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Maximum possible creation fee is 20%'[39m,
+  time: [33m0.463[39m
+}
+Spawning 1 of 7 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:145:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:289:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:146:4,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:145:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a begin block greater than the end block throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'End block must be greater than begin block'[39m,
+  time: [33m0.629[39m
+}
+Spawning 1 of 6 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:297:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:169:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a difference between the end block and the begin block greater than 10000000 blocks throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'End block minus begin block must be less than 10000000 blocks'[39m,
+  time: [33m0.554[39m
+}
+Spawning 1 of 5 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:297:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:193:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:147:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a lockLenghtBlocks greater than 10000000 blocks throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'lockLenghtBlocks block must be less than 10000000 blocks'[39m,
+  time: [33m1.595[39m
+}
+Spawning 1 of 4 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:150:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:311:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:217:5,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:150:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a lockLenghtBlocks > end block - begin block throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'lockLenghtBlocks block must be <= end block - begin block'[39m,
+  time: [33m0.548[39m
+}
+Spawning 1 of 3 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator
+    at reach standard library:57:5:application
+    at ./index.rsh:155:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:318:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:239:4,
+  es: [32m'Error: Assertion failed: Creator\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:155:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a totalRewardAmount <= 0 throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'totalRewardAmount must be > 0'[39m,
+  time: [33m1.609[39m
+}
+Spawning 1 of 2 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+SUCC {
+  actual: [33mtrue[39m,
+  e: Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO
+    at reach standard library:57:5:application
+    at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)
+    at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)
+    at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)
+      at Object.assert (/stdlib/dist/cjs/shared_backend.js:161:15)
+      at Creator (file:///app/build/index.main.mjs:282:10)
+      at runMicrotasks (<anonymous>)
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:96:5)[39m
+      at async file:///app/index.test.mjs:260:4,
+  es: [32m'Error: Assertion failed: Creator: Flat ALGO creation fee cannot be more than 1000 ALGO\n'[39m +
+    [32m'  at reach standard library:57:5:application\n'[39m +
+    [32m'  at ./index.rsh:140:10:application call to "check" (defined at: reach standard library:49:32:function exp)\n'[39m +
+    [32m'  at ./index.rsh:187:18:application call to "initialChecks" (defined at: ./index.rsh:132:5:function exp)\n'[39m +
+    [32m'  at ./index.rsh:173:15:application call to [unknown function] (defined at: ./index.rsh:173:19:function exp)'[39m,
+  expected: [33mtrue[39m,
+  exps: [32m''[39m,
+  id: [32m'Params with a flatAlgoCreationFee > 1000 Algo throws a check failure'[39m
+}
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'flatAlgoCreationFee must be <= 1000 Algo'[39m,
+  time: [33m0.965[39m
+}
+Spawning 1 of 1 jobs
+Waiting for 1 jobs
+[+] admin account created
+[+] creator account created
+[+] user account created
+[+] admin minted the reward token: Aro1914, supply: 1,000,000,000
+[+] admin minted the stake token: Lonewolf1914, supply: 1,000,000,000
+[+] transferred 2,000,000 Aro1914 to creator
+[+] attached user to the main contract
+SUCC {
+  actual: [90mundefined[39m,
+  expected: [90mundefined[39m,
+  id: [32m'Only the beneficiary address is allowed to claimFees'[39m,
+  time: [33m2.325[39m
+}
+Done running
