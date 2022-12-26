@@ -10,7 +10,11 @@ import { PeraWalletConnect } from '@perawallet/connect'
 import * as poolCtc from '../contracts/build/index.main.mjs'
 import * as mainCtc from '../contracts/build/main.main.mjs'
 
-const reach = loadStdlib({...process.env, REACH_NO_WARN: 'Y', REACH_CONNECTOR_MODE:'ALGO'})
+const reach = loadStdlib({
+	...process.env,
+	REACH_NO_WARN: 'Y',
+	REACH_CONNECTOR_MODE: 'ALGO',
+})
 
 const providerEnv = 'TestNet'
 
@@ -120,27 +124,27 @@ const ReachContextProvider = ({ children }) => {
 		}
 	}
 
-const postPool = async ({ what }) => {
-				const currentPools = pools
-				currentPools.push({
-					poolCtc: JSON.stringify(what[0]),
-				})
-				setPools([...currentPools])
-			}
+	const postPool = async ({ what }) => {
+		const currentPools = pools
+		currentPools.push({
+			poolCtc: JSON.stringify(what[0]),
+		})
+		setPools([...currentPools])
+	}
 
 	const launch = async () => {
 		const ctc = user.account.contract(mainCtc)
 		ctc.events.postPool.monitor(postPool)
-		ctc.events.postBeneficiary.monitor(({ what }) => {
-				setBeneficiary(reach.formatAddress(what[0]))
-				setContract({ appID: (await ctc.get) })
+		ctc.events.postBeneficiary.monitor(async ({ what }) => {
+			setBeneficiary(reach.formatAddress(what[0]))
+			setContract({ appID: await ctc.getInfo() })
 		})
 	}
 
 	const attach = async (ctcInfo) => {
 		try {
 			const ctc = user.account.contract(mainCtc, Number(ctcInfo))
-						setContract({ appID: ctcInfo })
+			setContract({ appID: ctcInfo })
 			ctc.events.postPool.monitor(postPool)
 			ctc.events.postBeneficiary.monitor(({ what }) => {
 				setBeneficiary(reach.formatAddress(what[0]))
