@@ -1,0 +1,47 @@
+.pool {
+	border: 1px solid rgb(0, 255, 128);
+	border-radius: 5px;
+	padding: 5px;
+	background-color: rgb(63, 63, 63);
+}
+
+.section {
+	width: max(25%, 250px);
+	padding: 5px;
+}
+
+.head {
+	color: rgb(0, 255, 128);
+	font-weight: 500;
+	font-size: 18px;
+}
+
+.lowerHalf {
+	color: rgb(208, 208, 208);
+}
+
+.button {
+	color: rgb(0, 255, 128);
+	font-size: inherit;
+	border: 1px solid rgb(0, 255, 128);
+	background-color: transparent;
+}
+
+.button:hover {
+	color: rgb(63, 63, 63);
+	background-color: rgb(0, 255, 128);
+}
+
+.lowerHalf label {
+	padding: 5px;
+}
+
+.input {
+	outline: none !important;
+	padding: 2px;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	font-size: inherit;
+	color: rgb(0, 255, 128);
+	background-color: rgb(80, 80, 80);
+}
