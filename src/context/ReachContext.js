@@ -120,23 +120,27 @@ const ReachContextProvider = ({ children }) => {
 		}
 	}
 
-	const launch = async () => {
-		const ctc = user.account.contract(mainCtc)
-		ctc.p.Admin({})
-		setContract({ appID: reach.bigNumberToNumber(await ctc.getInfo()) })
-	}
-
-	const attach = async (ctcInfo) => {
-		try {
-			const ctc = user.account.contract(mainCtc, Number(ctcInfo))
-			const postPool = async ({ what }) => {
+const postPool = async ({ what }) => {
 				const currentPools = pools
 				currentPools.push({
 					poolCtc: JSON.stringify(what[0]),
 				})
 				setPools([...currentPools])
 			}
-			setContract({ appID: ctcInfo })
+
+	const launch = async () => {
+		const ctc = user.account.contract(mainCtc)
+		ctc.events.postPool.monitor(postPool)
+		ctc.events.postBeneficiary.monitor(({ what }) => {
+				setBeneficiary(reach.formatAddress(what[0]))
+				setContract({ appID: (await ctc.get) })
+		})
+	}
+
+	const attach = async (ctcInfo) => {
+		try {
+			const ctc = user.account.contract(mainCtc, Number(ctcInfo))
+						setContract({ appID: ctcInfo })
 			ctc.events.postPool.monitor(postPool)
 			ctc.events.postBeneficiary.monitor(({ what }) => {
 				setBeneficiary(reach.formatAddress(what[0]))
