@@ -7,10 +7,10 @@ import {
 	ALGO_PeraConnect as PeraConnect,
 } from '@reach-sh/stdlib'
 import { PeraWalletConnect } from '@perawallet/connect'
-import * as mainCtc from '../contracts/build/index.main.mjs'
-import * as poolCtc from '../contracts/build/main.main.mjs'
+import * as poolCtc from '../contracts/build/index.main.mjs'
+import * as mainCtc from '../contracts/build/main.main.mjs'
 
-const reach = loadStdlib(process.env)
+const reach = loadStdlib({...process.env, REACH_NO_WARN: 'Y', REACH_CONNECTOR_MODE:'ALGO'})
 
 const providerEnv = 'TestNet'
 
@@ -35,7 +35,11 @@ const ReachContextProvider = ({ children }) => {
 		secret = ''
 	) => {
 		delete window.algorand
-		const instantReach = loadStdlib(process.env)
+		const instantReach = loadStdlib({
+			...process.env,
+			REACH_NO_WARN: 'Y',
+			REACH_CONNECTOR_MODE: 'ALGO',
+		})
 		switch (walletPreference) {
 			case 'PeraConnect':
 				instantReach.setWalletFallback(
