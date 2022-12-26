@@ -1,4 +1,4 @@
-import { App as Zpp } from './components/App'
+import Zpp from './components/App'
 
 function App() {
 	return <Zpp />

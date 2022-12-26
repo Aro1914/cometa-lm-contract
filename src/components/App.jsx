@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useReach, cf } from '../../hooks'
+import { useReach, cf } from '../hooks'
 import s from '../styles/Shared.module.css'
 // import a from '../styles/App.module.css'
 import p from '../styles/Pool.module.css'
-import { Pool } from '../Pool'
+import Pool from './Pool'
 
 const ConnectWallet = () => {
 	const { connectToWallet } = useReach()
