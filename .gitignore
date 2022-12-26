@@ -3,7 +3,7 @@ tls/
 .reach/
 Dockerfile
 .dockerignore
-package.json
+package-lock.json
 workingPromises.js
 package.json
 .vscode

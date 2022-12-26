@@ -10,7 +10,7 @@ import { PeraWalletConnect } from '@perawallet/connect'
 import * as mainCtc from '../contracts/build/index.main.mjs'
 import * as poolCtc from '../contracts/build/main.main.mjs'
 
-const reach = loadStdlib({ ...process.env, REACH_NO_WARN: 'Y' })
+const reach = loadStdlib(process.env)
 
 const providerEnv = 'TestNet'
 

@@ -8,7 +8,7 @@ import Pool from './Pool'
 const ConnectWallet = () => {
 	const { connectToWallet } = useReach()
 	return (
-		<div className={cf(s.wMax, s.flex, s['flex_dColumn'], s.g10, p.button)}>
+		<div className={cf(s.wMax, s.flex, s['flex_dColumn'], s.g10)}>
 			<button
 				className={cf(s.wMax, s.p5, s.flex, s.flexCenter, p.button)}
 				onClick={() => {
@@ -137,7 +137,9 @@ const Mint = () => {
 				/>
 			</label>
 			<button
-				onClick={() => mint(tokenInfo)}
+				onClick={() => {
+					mint(tokenInfo)
+				}}
 				className={cf(s.wMax, s.p5, s.flex, s.flexCenter, p.button)}
 				disabled={!tokenInfo.name || !tokenInfo.symbol || !tokenInfo.supply}
 			>
@@ -268,7 +270,9 @@ const Create = () => {
 				/>
 			</label>
 			<button
-				onClick={() => create(farmInfo)}
+				onClick={() => {
+					create(farmInfo)
+				}}
 				className={cf(s.wMax, s.p5, s.flex, s.flexCenter, p.button)}
 				disabled={
 					!farmInfo.stakeToken ||
@@ -288,24 +292,28 @@ const Create = () => {
 const App = () => {
 	const { contract, user, pools } = useReach()
 
-	return !user.address ? (
-		<ConnectWallet />
-	) : !contract.addID ? (
-		<Launch />
-	) : (
-		<div className={cf(s.window, s.wMax, s.flex, s.flexCenter)}>
-			<h1>Pools</h1>
-			{pools.map((el, i) => (
-				<Pool
-					key={i}
-					poolCtc={el.poolCtc}
-				/>
-			))}
-			<h2>Mint</h2>
-			<Mint />
-			<h2>Create</h2>
-			<Create />
-		</div>
+	return (
+		<>
+			{!user.address ? (
+				<ConnectWallet />
+			) : !contract.addID ? (
+				<Launch />
+			) : (
+				<div className={cf(s.window, s.wMax, s.flex, s.flexCenter)}>
+					<h1>Pools</h1>
+					{pools.map((el, i) => (
+						<Pool
+							key={i}
+							poolCtc={el.poolCtc}
+						/>
+					))}
+					<h2>Mint</h2>
+					<Mint />
+					<h2>Create</h2>
+					<Create />
+				</div>
+			)}
+		</>
 	)
 }
 
